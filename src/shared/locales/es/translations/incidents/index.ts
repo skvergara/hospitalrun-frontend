@@ -1,6 +1,6 @@
 export default {
   incidents: {
-    filterTitle: ' Filtrar por Estado',
+    filterTitle: 'Filtrar por Estado',
     label: 'Incidentes',
     actions: {
       report: 'Reporte',

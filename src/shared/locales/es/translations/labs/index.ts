@@ -25,7 +25,7 @@ export default {
       },
     },
     lab: {
-      code: 'Código de Exámen',
+      code: 'Código',
       status: 'Estado',
       for: 'Para',
       type: 'Tipo',
