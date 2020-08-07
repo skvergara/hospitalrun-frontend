@@ -3,7 +3,7 @@ import addMinutes from 'date-fns/addMinutes'
 import roundToNearestMinutes from 'date-fns/roundToNearestMinutes'
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useHistory } from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router-dom'
 
 import useAddBreadcrumbs from '../../../page-header/breadcrumbs/useAddBreadcrumbs'
 import useTitle from '../../../page-header/title/useTitle'
@@ -21,15 +21,28 @@ const breadcrumbs = [
 const NewAppointment = () => {
   const { t } = useTranslator()
   const history = useHistory()
+  const location = useLocation()
   const dispatch = useDispatch()
   useTitle(t('scheduling.appointments.new'))
   useAddBreadcrumbs(breadcrumbs, true)
-  const startDateTime = roundToNearestMinutes(new Date(), { nearestTo: 15 })
-  const endDateTime = addMinutes(startDateTime, 60)
   const { error } = useSelector((state: RootState) => state.appointment)
 
+  const state = location.state
+
+  const patient = (state as any)?.patient
+    ? (state as any)?.patient
+    : undefined
+
+  const startDateTime = (state as any)?.startDateTime
+    ? (state as any)?.startDateTime
+    : roundToNearestMinutes(new Date(), { nearestTo: 15 })
+
+  const endDateTime = (state as any)?.endDateTime
+    ? (state as any)?.endDateTime
+    : addMinutes(startDateTime, 60)
+
   const [appointment, setAppointment] = useState({
-    patient: '',
+    patient: patient.id,
     startDateTime: startDateTime.toISOString(),
     endDateTime: endDateTime.toISOString(),
     location: '',
@@ -64,6 +77,7 @@ const NewAppointment = () => {
           appointment={appointment as Appointment}
           error={error}
           onFieldChange={onFieldChange}
+          patient={patient}
         />
         <div className="row float-right">
           <div className="btn-group btn-group-lg">

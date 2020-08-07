@@ -8,9 +8,10 @@ import useAddBreadcrumbs from '../../page-header/breadcrumbs/useAddBreadcrumbs'
 import { fetchPatientAppointments } from '../../scheduling/appointments/appointments-slice'
 import useTranslator from '../../shared/hooks/useTranslator'
 import { RootState } from '../../shared/store'
+import Patient from '../../shared/model/Patient'
 
 interface Props {
-  patientId: string
+  patient: Patient
 }
 
 const AppointmentsList = (props: Props) => {
@@ -18,20 +19,20 @@ const AppointmentsList = (props: Props) => {
   const history = useHistory()
   const { t } = useTranslator()
 
-  const { patientId } = props
+  const { patient } = props
   const { appointments } = useSelector((state: RootState) => state.appointments)
 
   const breadcrumbs = [
     {
       i18nKey: 'scheduling.appointments.label',
-      location: `/patients/${patientId}/appointments`,
+      location: `/patients/${patient.id}/appointments`,
     },
   ]
   useAddBreadcrumbs(breadcrumbs)
 
   useEffect(() => {
-    dispatch(fetchPatientAppointments(patientId))
-  }, [dispatch, patientId])
+    dispatch(fetchPatientAppointments(patient.id))
+  }, [dispatch, patient.id])
 
   return (
     <>
@@ -42,7 +43,10 @@ const AppointmentsList = (props: Props) => {
             outlined
             color="success"
             icon="appointment-add"
-            onClick={() => history.push('/appointments/new')}
+            onClick={() => history.push({
+              pathname:'/appointments/new',
+              state:{patient: patient}
+            })}
           >
             {t('scheduling.appointments.new')}
           </Button>
