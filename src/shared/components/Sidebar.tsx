@@ -198,7 +198,7 @@ const Sidebar = () => {
       )}
     </>
   )
-
+  /*
   const getLabLinks = () => (
     <>
       <ListItem
@@ -348,7 +348,7 @@ const Sidebar = () => {
       )}
     </>
   )
-
+  */
   return (
     <nav
       className="col-md-2 d-none d-md-block bg-light sidebar"
@@ -369,9 +369,6 @@ const Sidebar = () => {
           {getDashboardLink()}
           {getPatientLinks()}
           {getAppointmentLinks()}
-          {getLabLinks()}
-          {getIncidentLinks()}
-          {getImagingLinks()}
         </List>
       </div>
     </nav>

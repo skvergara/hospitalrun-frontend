@@ -35,7 +35,7 @@ const pageMap: {
     path: '/appointments',
     icon: 'appointment',
   },
-  newLab: {
+  /*newLab: {
     permission: Permissions.RequestLab,
     label: 'labs.requests.new',
     path: '/labs/new',
@@ -70,7 +70,7 @@ const pageMap: {
     label: 'imagings.requests.label',
     path: '/imaging',
     icon: 'image',
-  },
+  },*/
   settings: {
     permission: null,
     label: 'settings.label',
