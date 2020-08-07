@@ -42,7 +42,7 @@ const NewAppointment = () => {
     : addMinutes(startDateTime, 60)
 
   const [appointment, setAppointment] = useState({
-    patient: patient.id,
+    patient: patient?.id,
     startDateTime: startDateTime.toISOString(),
     endDateTime: endDateTime.toISOString(),
     location: '',
