@@ -1,7 +1,16 @@
-import { Calendar, Button } from '@hospitalrun/components'
+import { Button } from '@hospitalrun/components'
 import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { useHistory } from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router-dom'
+
+import FullCalendar/*, { EventApi, DateSelectArg, EventClickArg, EventContentArg, formatDate }*/ from '@fullcalendar/react'
+import dayGridPlugin from '@fullcalendar/daygrid'
+import interactionPlugin from '@fullcalendar/interaction'
+import timeGridPlugin from '@fullcalendar/timegrid'
+//import listPlugin from '@fullcalendar/list'
+import '@fullcalendar/core/main.css'
+import '@fullcalendar/daygrid/main.css'
+import '@fullcalendar/timegrid/main.css'
 
 import useAddBreadcrumbs from '../../page-header/breadcrumbs/useAddBreadcrumbs'
 import { useButtonToolbarSetter } from '../../page-header/button-toolbar/ButtonBarProvider'
@@ -10,6 +19,8 @@ import PatientRepository from '../../shared/db/PatientRepository'
 import useTranslator from '../../shared/hooks/useTranslator'
 import { RootState } from '../../shared/store'
 import { fetchAppointments } from './appointments-slice'
+//import Appointment from './../../shared/model/Appointment'
+//import { updateAppointment } from './appointment-slice'
 
 interface Event {
   id: string
@@ -19,11 +30,14 @@ interface Event {
   allDay: boolean
 }
 
+const esLocale = require('../../../node_modules/@fullcalendar/core/locales/es.js')
+
 const breadcrumbs = [{ i18nKey: 'scheduling.appointments.label', location: '/appointments' }]
 
 const ViewAppointments = () => {
   const { t } = useTranslator()
   const history = useHistory()
+  const location = useLocation()
   useTitle(t('scheduling.appointments.label'))
   const dispatch = useDispatch()
   const { appointments } = useSelector((state: RootState) => state.appointments)
@@ -73,13 +87,22 @@ const ViewAppointments = () => {
     }
   }, [appointments])
 
+  const state = location.state
+  const selectedView = (state as any)?.selectedView
+    ? (state as any)?.selectedView
+    : 'timeGridWeek'
+
+  const calendarRef = React.createRef<FullCalendar>()
+
   return (
     <div>
-      <Calendar
-        events={events}
-        onEventClick={(event) => {
-          history.push(`/appointments/${event.id}`)
-        }}
+      <FullCalendar 
+      ref={calendarRef}
+      locale={esLocale}
+      events={events}
+      defaultView={selectedView}
+      plugins={ [dayGridPlugin, timeGridPlugin, interactionPlugin/*, listPlugin*/] }
+      editable={true}
       />
     </div>
   )
