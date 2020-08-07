@@ -32,7 +32,6 @@ const NewAppointment = () => {
   const patient = (state as any)?.patient
     ? (state as any)?.patient
     : undefined
-  console.log('patient state: '+patient)
 
   const startDateTime = (state as any)?.startDateTime
     ? (state as any)?.startDateTime
@@ -43,7 +42,7 @@ const NewAppointment = () => {
     : addMinutes(startDateTime, 60)
 
   const [appointment, setAppointment] = useState({
-    patient: patient?.id,
+    patient: patient.id,
     startDateTime: startDateTime.toISOString(),
     endDateTime: endDateTime.toISOString(),
     location: '',
@@ -78,6 +77,7 @@ const NewAppointment = () => {
           appointment={appointment as Appointment}
           error={error}
           onFieldChange={onFieldChange}
+          patient={patient}
         />
         <div className="row float-right">
           <div className="btn-group btn-group-lg">

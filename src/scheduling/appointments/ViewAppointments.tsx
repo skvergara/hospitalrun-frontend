@@ -110,7 +110,7 @@ const ViewAppointments = () => {
       maxTime={'22:00:00'}
       height={'auto'}
       selectMirror={true}
-      //nowIndicator={true}
+      nowIndicator={true}
       header={
         {
         left: 'prev,next today',
