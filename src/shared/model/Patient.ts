@@ -5,6 +5,7 @@ import ContactInformation from './ContactInformation'
 import Diagnosis from './Diagnosis'
 import Name from './Name'
 import Note from './Note'
+import MedicalRecord from './MedicalRecord'
 import RelatedPerson from './RelatedPerson'
 
 export default interface Patient extends AbstractDBModel, Name, ContactInformation {
@@ -19,6 +20,7 @@ export default interface Patient extends AbstractDBModel, Name, ContactInformati
   allergies?: Allergy[]
   diagnoses?: Diagnosis[]
   notes?: Note[]
+  medicalRecords?: MedicalRecord[]
   index: string
   carePlans: CarePlan[]
   bloodType: string

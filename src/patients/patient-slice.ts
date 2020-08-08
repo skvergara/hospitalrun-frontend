@@ -8,6 +8,7 @@ import Allergy from '../shared/model/Allergy'
 import CarePlan from '../shared/model/CarePlan'
 import Diagnosis from '../shared/model/Diagnosis'
 import Note from '../shared/model/Note'
+import MedicalRecord from '../shared/model/MedicalRecord'
 import Patient from '../shared/model/Patient'
 import RelatedPerson from '../shared/model/RelatedPerson'
 import { AppThunk } from '../shared/store'
@@ -24,6 +25,7 @@ interface PatientState {
   allergyError?: AddAllergyError
   diagnosisError?: AddDiagnosisError
   noteError?: AddNoteError
+  medicalRecordError?: AddMedicalRecordError
   relatedPersonError?: AddRelatedPersonError
   carePlanError?: AddCarePlanError
 }
@@ -57,6 +59,12 @@ interface AddDiagnosisError {
   date?: string
 }
 
+interface AddMedicalRecordError {
+  message?: string
+  name?: string
+  date?: string
+}
+
 interface AddNoteError {
   message?: string
   note?: string
@@ -84,6 +92,7 @@ const initialState: PatientState = {
   allergyError: undefined,
   diagnosisError: undefined,
   noteError: undefined,
+  medicalRecordError: undefined,
   relatedPersonError: undefined,
   carePlanError: undefined,
 }
@@ -135,6 +144,10 @@ const patientSlice = createSlice({
       state.status = 'error'
       state.noteError = payload
     },
+    addMedicalRecordError(state, { payload }: PayloadAction<AddMedicalRecordError>) {
+      state.status = 'error'
+      state.medicalRecordError = payload
+    },
     addCarePlanError(state, { payload }: PayloadAction<AddRelatedPersonError>) {
       state.status = 'error'
       state.carePlanError = payload
@@ -155,6 +168,7 @@ export const {
   addDiagnosisError,
   addRelatedPersonError,
   addNoteError,
+  addMedicalRecordError,
   addCarePlanError,
 } = patientSlice.actions
 
@@ -358,6 +372,40 @@ export const addDiagnosis = (
   } else {
     newDiagnosisError.message = 'patient.diagnoses.error.unableToAdd'
     dispatch(addDiagnosisError(newDiagnosisError))
+  }
+}
+
+function validateMedicalRecord(medicalRecord: MedicalRecord) {
+  const error: AddMedicalRecordError = {}
+
+  if (!medicalRecord.name) {
+    error.name = 'patient.medicalrecords.error.nameRequired'
+  }
+
+  if (!medicalRecord.medicalRecordDate) {
+    error.date = 'patient.medicalrecords.error.dateRequired' 
+  }
+
+  return error
+}
+
+export const addMedicalRecord = (
+  patientId: string,
+  medicalRecord: MedicalRecord,
+  onSuccess?: (patient: Patient) => void,
+): AppThunk => async (dispatch) => {
+  const newMedicalRecordError = validateMedicalRecord(medicalRecord)
+
+  if (isEmpty(newMedicalRecordError)) {
+    const patient = await PatientRepository.find(patientId)
+    const medicalRecords = patient.medicalRecords || []
+    medicalRecords.push({ id: uuid(), ...medicalRecord })
+    patient.medicalRecords = medicalRecords
+
+    await dispatch(updatePatient(patient, onSuccess))
+  } else {
+    newMedicalRecordError.message = 'patient.medicalrecords.error.unableToAdd'
+    dispatch(addMedicalRecordError(newMedicalRecordError))
   }
 }
 

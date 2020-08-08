@@ -24,6 +24,7 @@ import Diagnoses from '../diagnoses/Diagnoses'
 import GeneralInformation from '../GeneralInformation'
 import Labs from '../labs/LabsTab'
 import Note from '../notes/NoteTab'
+import MedicalRecords from '../medicalrecords/MedicalRecords'
 import { fetchPatient } from '../patient-slice'
 import RelatedPerson from '../related-persons/RelatedPersonTab'
 import { getPatientFullName } from '../util/patient-name-util'
@@ -99,6 +100,11 @@ const ViewPatient = () => {
           onClick={() => history.push(`/patients/${patient.id}`)}
         />
         <Tab
+          active={location.pathname === `/patients/${patient.id}/medicalrecords`}
+          label={t('patient.medicalrecords.label')}
+          onClick={() => history.push(`/patients/${patient.id}/medicalrecords`)}
+        />
+        <Tab
           active={location.pathname === `/patients/${patient.id}/relatedpersons`}
           label={t('patient.relatedPersons.label')}
           onClick={() => history.push(`/patients/${patient.id}/relatedpersons`)}
@@ -137,6 +143,9 @@ const ViewPatient = () => {
       <Panel>
         <Route exact path={path}>
           <GeneralInformation patient={patient} />
+        </Route>
+        <Route exact path={`${path}/medicalrecords`}>
+          <MedicalRecords patient={patient} />
         </Route>
         <Route exact path={`${path}/relatedpersons`}>
           <RelatedPerson patient={patient} />
