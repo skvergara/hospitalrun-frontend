@@ -48,6 +48,8 @@ const NewAppointment = () => {
     location: '',
     reason: '',
     type: '',
+    appointmentStatus: '',
+    paymentStatus: ''
   })
 
   const onCancelClick = () => {

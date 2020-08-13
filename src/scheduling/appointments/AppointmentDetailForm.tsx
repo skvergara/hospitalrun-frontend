@@ -38,6 +38,16 @@ const AppointmentDetailForm = (props: Props) => {
     { label: t('scheduling.appointment.types.walkIn'), value: 'walk in' },
   ]
 
+  const appointmentStatusOptions: Option[] = [
+    { label: 'Confirmed', value: 'confirmed' },
+    { label: 'Cancelled', value: 'cancelled' },
+  ]
+
+  const paymentStatusOptions: Option[] = [
+    { label: 'Payment Confirmed', value: 'paymentConfirmed' },
+    { label: 'Payment Pending', value: 'paymentPending' },
+  ]
+
   return (
     <>
       {error?.message && <Alert className="alert" color="danger" message={t(error?.message)} />}
@@ -141,6 +151,30 @@ const AppointmentDetailForm = (props: Props) => {
               }
             />
           </div>
+        </div>
+      </div>
+      <div className="row">
+        <div className="col">
+          <SelectWithLabelFormGroup
+            name="appointmentStatus"
+            //label={t('scheduling.appointment.type')}
+            label={'Appointment Status'}
+            options={appointmentStatusOptions}
+            defaultSelected={appointmentStatusOptions.filter(({ value }) => value === appointment.appointmentStatus)}
+            onChange={(values) => onFieldChange && onFieldChange('appointmentStatus', values[0])}
+            isEditable={isEditable}
+          />
+        </div>
+        <div className="col">
+          <SelectWithLabelFormGroup
+            name="paymentStatus"
+            //label={t('scheduling.appointment.type')}
+            label={'Payment Status'}
+            options={paymentStatusOptions}
+            defaultSelected={paymentStatusOptions.filter(({ value }) => value === appointment.paymentStatus)}
+            onChange={(values) => onFieldChange && onFieldChange('paymentStatus', values[0])}
+            isEditable={isEditable}
+          />
         </div>
       </div>
     </>

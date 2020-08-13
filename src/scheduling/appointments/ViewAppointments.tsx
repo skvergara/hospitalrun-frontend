@@ -19,7 +19,7 @@ import PatientRepository from '../../shared/db/PatientRepository'
 import useTranslator from '../../shared/hooks/useTranslator'
 import { RootState } from '../../shared/store'
 import { fetchAppointments } from './appointments-slice'
-import Appointment from './../../shared/model/Appointment'
+import Appointment, { AppointmentStatus, PaymentStatus, statusBackgroundColors, statusBorderColors } from './../../shared/model/Appointment'
 import { updateAppointment } from './appointment-slice'
 
 interface Event {
@@ -28,6 +28,8 @@ interface Event {
   end: Date
   title: string
   allDay: boolean
+  backgroundColor: string
+  borderColor: string
 }
 
 const esLocale = require('../../../node_modules/@fullcalendar/core/locales/es.js')
@@ -65,6 +67,8 @@ const ViewAppointments = () => {
   }, [dispatch, setButtonToolBar, history, t])
 
   useEffect(() => {
+    const getBackgroundColor = (appointmentStatus: AppointmentStatus) => (statusBackgroundColors as any)[appointmentStatus]
+    const getBorderColor = (paymentStatus: PaymentStatus) => (statusBorderColors as any)[paymentStatus]
     const getAppointments = async () => {
       const newEvents = await Promise.all(
         appointments.map(async (a) => {
@@ -75,6 +79,8 @@ const ViewAppointments = () => {
             end: new Date(a.endDateTime),
             title: patient.fullName || '',
             allDay: false,
+            backgroundColor: getBackgroundColor(a.appointmentStatus as AppointmentStatus),
+            borderColor: getBorderColor(a.paymentStatus as PaymentStatus)
           }
         }),
       )
