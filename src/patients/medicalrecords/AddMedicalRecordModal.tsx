@@ -20,10 +20,10 @@ const AddMedicalRecordModal = (props: Props) => {
   const { medicalRecordError, patient } = useSelector((state: RootState) => state.patient)
   const { t } = useTranslator()
 
-  const [medicalRecord, setMedicalRecord] = useState({ name: '', medicalRecordDate: new Date().toISOString() })
+  const [medicalRecord, setMedicalRecord] = useState({ name: '', medicalRecordDate: new Date().toISOString(), aperture: '' })
 
   useEffect(() => {
-    setMedicalRecord({ name: '', medicalRecordDate: new Date().toISOString() })
+    setMedicalRecord({ name: '', medicalRecordDate: new Date().toISOString(), aperture: '' })
   }, [show])
 
   const onSaveButtonClick = () => {
@@ -42,6 +42,11 @@ const AddMedicalRecordModal = (props: Props) => {
         medicalRecordDate: medicalRecordDate.toISOString(),
       }))
     }
+  }
+
+  const onApertureChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const aperture = event.target.value
+    setMedicalRecord((prevMedicalRecord) => ({ ...prevMedicalRecord, aperture }))
   }
 
   const body = (
@@ -64,6 +69,23 @@ const AddMedicalRecordModal = (props: Props) => {
                 placeholder={t('patient.medicalrecords.medicalRecordName')}
                 value={medicalRecord.name}
                 onChange={onNameChange}
+                isRequired
+                feedback={t(medicalRecordError?.name || '')}
+                isInvalid={!!medicalRecordError?.name}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-md-12">
+            <div className="form-group">
+              <TextInputWithLabelFormGroup
+                name="name"
+                label={t('patient.medicalrecords.medicalRecordAperture')}
+                isEditable
+                placeholder={t('patient.medicalrecords.medicalRecordAperture')}
+                value={medicalRecord.aperture}
+                onChange={onApertureChange}
                 isRequired
                 feedback={t(medicalRecordError?.name || '')}
                 isInvalid={!!medicalRecordError?.name}

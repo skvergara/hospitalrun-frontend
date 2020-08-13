@@ -6,6 +6,7 @@ import Diagnosis from './Diagnosis'
 import Name from './Name'
 import Note from './Note'
 import MedicalRecord from './MedicalRecord'
+import CloseAnamnesis from './CloseAnamnesis'
 import RelatedPerson from './RelatedPerson'
 
 export default interface Patient extends AbstractDBModel, Name, ContactInformation {
@@ -21,6 +22,7 @@ export default interface Patient extends AbstractDBModel, Name, ContactInformati
   diagnoses?: Diagnosis[]
   notes?: Note[]
   medicalRecords?: MedicalRecord[]
+  closeAnamneses?: CloseAnamnesis[]
   index: string
   carePlans: CarePlan[]
   bloodType: string

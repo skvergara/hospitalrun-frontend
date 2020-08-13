@@ -9,6 +9,7 @@ import CarePlan from '../shared/model/CarePlan'
 import Diagnosis from '../shared/model/Diagnosis'
 import Note from '../shared/model/Note'
 import MedicalRecord from '../shared/model/MedicalRecord'
+import CloseAnamnesis from '../shared/model/CloseAnamnesis'
 import Patient from '../shared/model/Patient'
 import RelatedPerson from '../shared/model/RelatedPerson'
 import { AppThunk } from '../shared/store'
@@ -26,6 +27,7 @@ interface PatientState {
   diagnosisError?: AddDiagnosisError
   noteError?: AddNoteError
   medicalRecordError?: AddMedicalRecordError
+  closeAnamnesisError?: AddCloseAnamnesisError
   relatedPersonError?: AddRelatedPersonError
   carePlanError?: AddCarePlanError
 }
@@ -65,6 +67,13 @@ interface AddMedicalRecordError {
   date?: string
 }
 
+interface AddCloseAnamnesisError {
+  message?: string
+  name?: string
+  date?: string
+  description?: string
+}
+
 interface AddNoteError {
   message?: string
   note?: string
@@ -93,6 +102,7 @@ const initialState: PatientState = {
   diagnosisError: undefined,
   noteError: undefined,
   medicalRecordError: undefined,
+  closeAnamnesisError: undefined,
   relatedPersonError: undefined,
   carePlanError: undefined,
 }
@@ -148,6 +158,10 @@ const patientSlice = createSlice({
       state.status = 'error'
       state.medicalRecordError = payload
     },
+    addCloseAnamnesisError(state, { payload }: PayloadAction<AddCloseAnamnesisError>) {
+      state.status = 'error'
+      state.closeAnamnesisError = payload
+    },
     addCarePlanError(state, { payload }: PayloadAction<AddRelatedPersonError>) {
       state.status = 'error'
       state.carePlanError = payload
@@ -169,6 +183,7 @@ export const {
   addRelatedPersonError,
   addNoteError,
   addMedicalRecordError,
+  addCloseAnamnesisError,
   addCarePlanError,
 } = patientSlice.actions
 
@@ -406,6 +421,44 @@ export const addMedicalRecord = (
   } else {
     newMedicalRecordError.message = 'patient.medicalrecords.error.unableToAdd'
     dispatch(addMedicalRecordError(newMedicalRecordError))
+  }
+}
+
+function validateCloseAnamnesis(closeAnamnesis: CloseAnamnesis) {
+  const error: AddCloseAnamnesisError = {}
+
+  if (!closeAnamnesis.name) {
+    error.name = 'patient.medicalrecords.error.nameRequired'
+  }
+
+  if (!closeAnamnesis.closeAnamnesisDate) {
+    error.date = 'patient.medicalrecords.error.dateRequired' 
+  }
+
+  if (!closeAnamnesis.description) {
+    error.description = 'patient.medicalrecords.error.dateRequired' 
+  }
+
+  return error
+}
+
+export const addCloseAnamnesis = (
+  patientId: string,
+  closeAnamnesis: CloseAnamnesis,
+  onSuccess?: (patient: Patient) => void,
+): AppThunk => async (dispatch) => {
+  const newCloseAnamnesisError = validateCloseAnamnesis(closeAnamnesis)
+
+  if (isEmpty(newCloseAnamnesisError)) {
+    const patient = await PatientRepository.find(patientId)
+    const closeAnamneses = patient.closeAnamneses || []
+    closeAnamneses.push({ id: uuid(), ...closeAnamnesis })
+    patient.closeAnamneses = closeAnamneses
+
+    await dispatch(updatePatient(patient, onSuccess))
+  } else {
+    newCloseAnamnesisError.message = 'patient.medicalrecords.error.unableToAdd' //fix trans
+    dispatch(addCloseAnamnesisError(newCloseAnamnesisError))
   }
 }
 

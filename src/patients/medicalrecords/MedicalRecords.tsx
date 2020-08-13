@@ -1,4 +1,6 @@
-import { Button, List, ListItem, Alert } from '@hospitalrun/components'
+//import { Button, List, ListItem, Alert } from '@hospitalrun/components'
+import { Button, List, ListItem, Alert/*, BarGraph, PieGraph*/ } from '@hospitalrun/components'
+//import { Data, Dataset, Axis } from '@hospitalrun/components/dist/components/Graph/interfaces'
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
 
@@ -11,6 +13,8 @@ import Permissions from '../../shared/model/Permissions'
 import { RootState } from '../../shared/store'
 //import AddDiagnosisModal from './AddDiagnosisModal'
 import AddMedicalRecordModal from './AddMedicalRecordModal'
+
+import { Line } from "react-chartjs-2"
 
 interface Props {
   patient: Patient
@@ -34,6 +38,29 @@ const MedicalRecords = (props: Props) => {
 
   const onAddMedicalRecordModalClose = () => {
     setShowMedicalRecordModal(false)
+  }
+
+  /*let data1:Data[] = [{x:1,y:1},{x:2,y:2},{x:3,y:3}]
+  let dataset:Dataset[] = [{label:'mydataset',data:data1}]
+  let yAxes:Axis[] = [{type:'linear', label:'yaxis'}]
+  let xAxes:Axis[] = [{type:'linear', label:'xaxis'}]*/
+
+  const dataApertura = patient.medicalRecords?.map((a: MedicalRecord) => (
+    {date: a.medicalRecordDate, ap:a.aperture}))
+  console.log(dataApertura)
+  console.log(dataApertura?.map(a => a.ap ))
+
+  const data = {
+    labels: dataApertura?.map(a => a.date),
+    datasets: [
+      {
+        label: "First dataset",
+        data: dataApertura?.map(a => a.ap),
+        fill: true,
+        backgroundColor: "rgba(75,192,192,0.2)",
+        borderColor: "rgba(75,192,192,1)"
+      }
+    ]
   }
 
   return (
@@ -65,10 +92,11 @@ const MedicalRecords = (props: Props) => {
       )}
       <List>
         {patient.medicalRecords?.map((a: MedicalRecord) => (
-          <ListItem key={a.id}>{a.name}</ListItem>
+          <ListItem key={a.id}>{a.name + ' ' + a.aperture}</ListItem>
         ))}
       </List>
       <AddMedicalRecordModal show={showMedicalRecordModal} onCloseButtonClick={onAddMedicalRecordModalClose} />
+      <Line data={data} />
     </>
   )
 }

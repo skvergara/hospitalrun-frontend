@@ -22,12 +22,13 @@ import AppointmentsList from '../appointments/AppointmentsList'
 import CarePlanTab from '../care-plans/CarePlanTab'
 import Diagnoses from '../diagnoses/Diagnoses'
 import GeneralInformation from '../GeneralInformation'
+import CloseAnamneses from '../closeanamneses/CloseAnamneses'
 import Labs from '../labs/LabsTab'
 import Note from '../notes/NoteTab'
-import MedicalRecords from '../medicalrecords/MedicalRecords'
 import { fetchPatient } from '../patient-slice'
 import RelatedPerson from '../related-persons/RelatedPersonTab'
 import { getPatientFullName } from '../util/patient-name-util'
+import MedicalRecords from '../medicalrecords/MedicalRecords'
 
 const getPatientCode = (p: Patient): string => {
   if (p) {
@@ -100,6 +101,11 @@ const ViewPatient = () => {
           onClick={() => history.push(`/patients/${patient.id}`)}
         />
         <Tab
+          active={location.pathname === `/patients/${patient.id}/closeanamneses`}
+          label={t('Close Anamneses')}
+          onClick={() => history.push(`/patients/${patient.id}/closeanamneses`)}
+        />
+        <Tab
           active={location.pathname === `/patients/${patient.id}/medicalrecords`}
           label={t('patient.medicalrecords.label')}
           onClick={() => history.push(`/patients/${patient.id}/medicalrecords`)}
@@ -144,6 +150,9 @@ const ViewPatient = () => {
         <Route exact path={path}>
           <GeneralInformation patient={patient} />
         </Route>
+        <Route exact path={`${path}/closeanamneses`}>
+          <CloseAnamneses patient={patient} />
+        </Route>
         <Route exact path={`${path}/medicalrecords`}>
           <MedicalRecords patient={patient} />
         </Route>
@@ -151,7 +160,7 @@ const ViewPatient = () => {
           <RelatedPerson patient={patient} />
         </Route>
         <Route exact path={`${path}/appointments`}>
-        <AppointmentsList patient={patient} />
+          <AppointmentsList patient={patient} />
         </Route>
         <Route path={`${path}/allergies`}>
           <Allergies patient={patient} />
