@@ -9,8 +9,7 @@ import useTranslator from '../../shared/hooks/useTranslator'
 import CloseAnamnesis from '../../shared/model/CloseAnamnesis'
 import Patient from '../../shared/model/Patient'
 import { RootState } from '../../shared/store'
-//import { addCloseAnamnesis } from '../patient-slice'
-import { updatePatient/*, fetchPatient*/ } from '../patient-slice'
+import { updatePatient } from '../patient-slice'
 
 interface Props {
   editCloseAnamnesis: CloseAnamnesis
@@ -25,8 +24,7 @@ const EditCloseAnamnesisModal = (props: Props) => {
   const { closeAnamnesisError, patient: reduxPatient } = useSelector((state: RootState) => state.patient)
   const { t } = useTranslator()
   const history = useHistory()
-console.log('INDEX: '+index)
-console.log(onCloseButtonClick)
+
   const [closeAnamnesis, setCloseAnamnesis] = useState({
     name: editCloseAnamnesis.name,
     closeAnamnesisDate: editCloseAnamnesis.closeAnamnesisDate,
@@ -43,28 +41,17 @@ console.log(onCloseButtonClick)
 
   const [patient, setPatient] = useState({} as Patient)
 
-  /*const { patient: reduxPatient, status, updateError } = useSelector(
-    (state: RootState) => state.patient,
-  )*/
-
   useEffect(() => {
     setPatient(reduxPatient)
   }, [reduxPatient])
 
-  //const { id } = useParams()
-  /*useEffect(() => {
-    if (patient.id) {
-      dispatch(fetchPatient(patient.id))
-    }
-  }, [patient.id, dispatch])*/
-
-  const onPatientChange = (newPatient: Partial<Patient>) => { console.log('onPatientChange!!!!!!!!')
+  const onPatientChange = (newPatient: Partial<Patient>) => {
     setPatient(newPatient as Patient)
   }
 
   const data = (patient.closeAnamneses as CloseAnamnesis[])
 
-  const onFieldChange = (name: string, value: string | boolean | CloseAnamnesis[]) => { console.log('onFieldChange!!!!!!!!')
+  const onFieldChange = (name: string, value: string | boolean | CloseAnamnesis[]) => {
     //if (onChange) {
       const newPatient = {
         ...patient,
@@ -75,17 +62,33 @@ console.log(onCloseButtonClick)
   }
 
   const onValueChange = (
+    name: string,
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    index: number,
-  ) => { console.log('onValueChange!!!!!!!!')
+    index: number
+  ) => {
     //if (onChange) {
       const newValue = event.currentTarget.value 
-      const currentCloseAnamnesis = { ...data[index], name: newValue } //hay que usar el key del Objeto: e.g. name y no value
-      console.log('currentClose: '+currentCloseAnamnesis.name +' -- '+currentCloseAnamnesis.description)
+      setCloseAnamnesis((prevCloseAnamnesis) => ({ ...prevCloseAnamnesis, [name]: newValue }))
+
+      const currentCloseAnamnesis = { ...data[index], [name]: newValue }
       const newCloseAnamneses = [...data]
       newCloseAnamneses.splice(index, 1, currentCloseAnamnesis)
       onFieldChange('closeAnamneses', newCloseAnamneses)
     //}
+  }
+
+  const onCloseAnamnesisDateChange = (closeAnamnesisDateInput: Date, index: number) => {
+    if (closeAnamnesisDateInput) {
+      setCloseAnamnesis((prevCloseAnamnesis) => ({
+        ...prevCloseAnamnesis,
+        closeAnamnesisDate: closeAnamnesisDateInput.toISOString(),
+      }))
+    }
+    
+    const currentCloseAnamnesis = { ...data[index], closeAnamnesisDate: closeAnamnesisDateInput.toISOString() } //hay que usar el key del Objeto: e.g. name y no value
+    const newCloseAnamneses = [...data]
+    newCloseAnamneses.splice(index, 1, currentCloseAnamnesis)
+    onFieldChange('closeAnamneses', newCloseAnamneses)
   }
 
   const onSuccessfulSave = (updatedPatient: Patient) => {
@@ -107,33 +110,7 @@ console.log(onCloseButtonClick)
 
   const onCancel = () => {
     setPatient(reduxPatient)
-    //history.push(`/patients/${patient.id}/closeanamneses`)
     onCloseButtonClick()
-  }
-
-  /*const onNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const name = event.target.value
-    setCloseAnamnesis((prevCloseAnamnesis) => ({ ...prevCloseAnamnesis, name }))
-  }*/
-
-  //in GI: onChange={(newPhoneNumbers) => onFieldChange('phoneNumbers', newPhoneNumbers)}
-  //in ContactInfo:  
-  /* 
-  
-  */
-
-  const onCloseAnamnesisDateChange = (closeAnamnesisDate: Date) => {
-    if (closeAnamnesisDate) {
-      setCloseAnamnesis((prevCloseAnamnesis) => ({
-        ...prevCloseAnamnesis,
-        closeAnamnesisDate: closeAnamnesisDate.toISOString(),
-      }))
-    }
-  }
-
-  const onDescriptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const description = event.target.value
-    setCloseAnamnesis((prevCloseAnamnesis) => ({ ...prevCloseAnamnesis, description }))
   }
 
   const body = (
@@ -158,7 +135,7 @@ console.log(onCloseButtonClick)
                 placeholder={'ph name'}
                 value={closeAnamnesis.name}
                 //onChange={onNameChange}
-                onChange={(event: any) => onValueChange(event, index)}
+                onChange={(event: any) => onValueChange('name', event, index)}
                 isRequired
                 feedback={t(closeAnamnesisError?.name || '')}
                 isInvalid={!!closeAnamnesisError?.name}
@@ -177,7 +154,7 @@ console.log(onCloseButtonClick)
                 //placeholder={t('patient.medicalrecords.closeAnamnesisAperture')}
                 placeholder={'ph description'}
                 value={closeAnamnesis.description}
-                onChange={onDescriptionChange}
+                onChange={(event: any) => onValueChange('description', event, index)}
                 isRequired
                 feedback={t(closeAnamnesisError?.name || '')}
                 isInvalid={!!closeAnamnesisError?.name}
@@ -193,7 +170,7 @@ console.log(onCloseButtonClick)
               label={'labael date'}
               value={new Date(closeAnamnesis.closeAnamnesisDate)}
               isEditable
-              onChange={onCloseAnamnesisDateChange}
+              onChange={(date: Date) => onCloseAnamnesisDateChange(date, index)}
               isRequired
               feedback={t(closeAnamnesisError?.date || '')}
               isInvalid={!!closeAnamnesisError?.date}

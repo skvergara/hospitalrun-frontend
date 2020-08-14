@@ -1,21 +1,19 @@
-//import { Button, List, ListItem, Alert } from '@hospitalrun/components'
-import { Panel, Button, Alert/*, BarGraph, PieGraph*/ } from '@hospitalrun/components'
-//import { Data, Dataset, Axis } from '@hospitalrun/components/dist/components/Graph/interfaces'
+import { Panel, Button, Alert, Toast, Modal } from '@hospitalrun/components'
 import React, { useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 
 import useAddBreadcrumbs from '../../page-header/breadcrumbs/useAddBreadcrumbs'
 import useTranslator from '../../shared/hooks/useTranslator'
-//import Diagnosis from '../../shared/model/Diagnosis'
 import CloseAnamnesis from '../../shared/model/CloseAnamnesis'
 import Patient from '../../shared/model/Patient'
 import Permissions from '../../shared/model/Permissions'
 import { RootState } from '../../shared/store'
-//import AddDiagnosisModal from './AddDiagnosisModal'
 import AddCloseAnamnesisModal from './AddCloseAnamnesisModal'
 import EditCloseAnamnesisModal from './EditCloseAnamnesisModal'
 
 import TextInputWithLabelFormGroup from '../../shared/components/input/TextInputWithLabelFormGroup'
+
+import { updatePatient } from '../patient-slice'
 
 interface Props {
   patient: Patient
@@ -24,6 +22,7 @@ interface Props {
 const CloseAnamneses = (props: Props) => {
   const { patient } = props
   const { t } = useTranslator()
+  const dispatch = useDispatch()
   const { permissions } = useSelector((state: RootState) => state.user)
   const [showCloseAnamnesisModal, setShowCloseAnamnesisModal] = useState(false)
   const [showEditCloseAnamnesisModal, setShowEditCloseAnamnesisModal] = useState(false)
@@ -34,6 +33,7 @@ const CloseAnamneses = (props: Props) => {
     description: ''   
   })
   const [index, setIndex] = useState(0)
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState<boolean>(false)
 
   const breadcrumbs = [
     {
@@ -66,19 +66,35 @@ const CloseAnamneses = (props: Props) => {
     setShowEditCloseAnamnesisModal(true)
   }
 
-  const name='name'
-  const description='description'
-  
-  /*let editCloseAnamnesis: CloseAnamnesis = {
-    id: '',
-    name: 'test!!!!',
-    closeAnamnesisDate: new Date().toISOString(),
-    description: ''   
-  }*/
+  const getIndex = (i: number) => {
+    setIndex(i)
+  }
 
-  /*const setEditCloseAnamnesis = (entry: CloseAnamnesis) => {
-    editCloseAnamnesis = entry
-  }*/
+  const onCloseAnamnesisDeleteButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+    setShowDeleteConfirmation(true)
+  }
+
+  const onDeleteSuccess = () => {
+    Toast('success', t('states.success'), t('scheduling.appointment.successfullyDeleted'))
+  }
+
+  const onDeleteConfirmationButtonClick = () => {
+    const newCloseAnamneses = [...data]
+    newCloseAnamneses.splice(index, 1)
+    onFieldChange('closeAnamneses', newCloseAnamneses)
+    setShowDeleteConfirmation(false)
+  }
+
+  const data = (patient.closeAnamneses as CloseAnamnesis[])
+
+  const onFieldChange = (name: string, value: string | boolean | CloseAnamnesis[]) => {
+      const newPatient = {
+        ...patient,
+        [name]: value,
+      }
+      dispatch(updatePatient(newPatient, onDeleteSuccess))
+  }
 
   const entries = patient.closeAnamneses?.map((entry:CloseAnamnesis, i) => {
     //const error = errors ? errors[i] : undefined
@@ -100,11 +116,24 @@ const CloseAnamneses = (props: Props) => {
               </Button>
             )}
           </div>
+          <div className="col-md-12 d-flex justify-content-end">
+            {permissions.includes(Permissions.AddDiagnosis) && ( //check permisions
+              <Button
+                outlined
+                color="success"
+                icon="add"
+                iconLocation="left"
+                onClick={(event) => {getIndex(i); onCloseAnamnesisDeleteButtonClick(event)}}
+              >
+                {'delete'}
+              </Button>
+            )}
+          </div>
           <div className="col-md-2">
             <TextInputWithLabelFormGroup key={entry.id}
               //label={t('Name')}
               label={'Name'}
-              name={`${name}${i}`}
+              name={`name${i}`}
               //value={patient.closeAnamneses?.map((a:CloseAnamnesis) => (a.name))[0]}
               value={entry.name}
               //isEditable={isEditable}
@@ -117,7 +146,7 @@ const CloseAnamneses = (props: Props) => {
             <TextInputWithLabelFormGroup key={entry.id}
               //label={t('Descripción')}
               label={'Descripción'}
-              name={`${description}${i}`}
+              name={`description${i}`}
               //value={patient.closeAnamneses?.map((a:CloseAnamnesis) => (a.description))[0]}
               value={entry.description}
               //isEditable={isEditable}
@@ -166,6 +195,18 @@ const CloseAnamneses = (props: Props) => {
       </div>
       <AddCloseAnamnesisModal show={showCloseAnamnesisModal} onCloseButtonClick={onAddCloseAnamnesisModalClose} />
       <EditCloseAnamnesisModal editCloseAnamnesis={editCloseAnamnesis} index={index} show={showEditCloseAnamnesisModal} onCloseButtonClick={onEditCloseAnamnesisModalClose} />
+      <Modal
+        body={t('scheduling.appointment.deleteConfirmationMessage')}
+        buttonsAlignment="right"
+        show={showDeleteConfirmation}
+        closeButton={{
+          children: t('actions.delete'),
+          color: 'danger',
+          onClick: onDeleteConfirmationButtonClick,
+        }}
+        title={t('actions.confirmDelete')}
+        toggle={() => setShowDeleteConfirmation(false)}
+      />
     </>
   )
 }
