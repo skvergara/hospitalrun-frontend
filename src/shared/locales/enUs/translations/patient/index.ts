@@ -87,6 +87,46 @@ export default {
       addDiagnosisAbove: 'Add a diagnosis using the button above.',
       successfullyAdded: 'Successfully added a new diagnosis!',
     },
+    medicalrecords: {
+      label: 'Medical Records',
+      new: 'Add Medical Record',
+      medicalRecordName: 'Medical Record Name',
+      medicalRecordDate: 'Medical Record Date',
+      medicalRecordAperture: 'Medical Record Aperture',
+      warning: {
+        noMedicalRecords: 'No Medical Records',
+      },
+      error: {
+        nameRequired: 'Medical Record Name is required.',
+        dateRequired: 'Medical Record Date is required.',
+        unableToAdd: 'Unable to add new medical record',
+      },
+      addMedicalRecordAbove: 'Add a medical record using the button above.',
+      successfullyAdded: 'Successfully added a new medical record!',
+    },
+    closeAnamneses: {
+      label: 'Close Anamneses',
+      new: 'Add Close Anamnesis',
+      edit: 'Edit Close Anamnesis',
+      closeAnamnesisTitle: 'Close Anamnesis Title',
+      closeAnamnesisName: 'Close Anamnesis Name',
+      closeAnamnesisSize: 'Close Anamnesis Size',
+      closeAnamnesisDate: 'Close Anamnesis Date',
+      warning: {
+        noCloseAnamneses: 'No Close Anamneses',
+      },
+      error: {
+        titleRequired: 'Close Anamnesis Title is required.',
+        nameRequired: 'Close Anamnesis Name is required.',
+        sizeRequired: 'Close Anamnesis Size is required.',
+        dateRequired: 'Close Anamnesis Date is required.',
+        unableToAdd: 'Unable to add new close anamnesis',
+      },
+      addCloseAnamnesisAbove: 'Add a close anamnesis using the button above.',
+      successfullyAdded: 'Successfully added a new close anamnesis!',
+      successfullyUpdated: 'Successfully updated the close anamnesis!',
+      deleteConfirmationMessage: 'Are you sure you want to delete this close anamnesis?'
+    },
     note: 'Note',
     notes: {
       label: 'Notes',
