@@ -28,7 +28,6 @@ import Note from '../notes/NoteTab'
 import { fetchPatient } from '../patient-slice'
 import RelatedPerson from '../related-persons/RelatedPersonTab'
 import { getPatientFullName } from '../util/patient-name-util'
-import MedicalRecords from '../medicalrecords/MedicalRecords'
 
 const getPatientCode = (p: Patient): string => {
   if (p) {
@@ -106,11 +105,6 @@ const ViewPatient = () => {
           onClick={() => history.push(`/patients/${patient.id}/closeanamneses`)}
         />
         <Tab
-          active={location.pathname === `/patients/${patient.id}/medicalrecords`}
-          label={t('patient.medicalrecords.label')}
-          onClick={() => history.push(`/patients/${patient.id}/medicalrecords`)}
-        />
-        <Tab
           active={location.pathname === `/patients/${patient.id}/relatedpersons`}
           label={t('patient.relatedPersons.label')}
           onClick={() => history.push(`/patients/${patient.id}/relatedpersons`)}
@@ -152,9 +146,6 @@ const ViewPatient = () => {
         </Route>
         <Route exact path={`${path}/closeanamneses`}>
           <CloseAnamneses patient={patient} />
-        </Route>
-        <Route exact path={`${path}/medicalrecords`}>
-          <MedicalRecords patient={patient} />
         </Route>
         <Route exact path={`${path}/relatedpersons`}>
           <RelatedPerson patient={patient} />
