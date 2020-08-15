@@ -7,7 +7,8 @@ import TextInputWithLabelFormGroup from '../../shared/components/input/TextInput
 import useTranslator from '../../shared/hooks/useTranslator'
 import CloseAnamnesis from '../../shared/model/CloseAnamnesis'
 import { RootState } from '../../shared/store'
-import { addCloseAnamnesis } from '../patient-slice'
+import { addCloseAnamnesis, removeCloseAnamnesisError } from '../patient-slice'
+import CloseAnamnesisLayout from './CloseAnamnesisLayout'
 
 interface Props {
   show: boolean
@@ -17,39 +18,59 @@ interface Props {
 const AddCloseAnamnesisModal = (props: Props) => {
   const { show, onCloseButtonClick } = props
   const dispatch = useDispatch()
-  const { closeAnamnesisError, patient } = useSelector((state: RootState) => state.patient)
+  const { closeAnamnesisError, patient } = useSelector((state: RootState) => {console.log(state.patient); return state.patient})
   const { t } = useTranslator()
-
-  const [closeAnamnesis, setCloseAnamnesis] = useState({ name: '', closeAnamnesisDate: new Date().toISOString(), description: '' })
+  
+  const [closeAnamnesis, setCloseAnamnesis] = useState({ title: '', name: '', closeAnamnesisDate: new Date().toISOString(), size: '' })
 
   useEffect(() => {
-    setCloseAnamnesis({ name: '', closeAnamnesisDate: new Date().toISOString(), description: '' })
+    setCloseAnamnesis({ title: '', name: '', closeAnamnesisDate: new Date().toISOString(), size: '' })
   }, [show])
 
-  const onSaveButtonClick = () => {
-    dispatch(addCloseAnamnesis(patient.id, closeAnamnesis as CloseAnamnesis))
+  const onSaveButtonSuccess = () => {
+    dispatch(removeCloseAnamnesisError())
   }
 
-  const onNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const name = event.target.value
+  const onSaveButtonClick = () => {
+    dispatch(addCloseAnamnesis(patient.id, closeAnamnesis as CloseAnamnesis, onSaveButtonSuccess))
+  }
+
+  const onValueChange = (name: string, event: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = event.currentTarget.value
+    console.log('newValue: '+newValue) 
+    setCloseAnamnesis((prevCloseAnamnesis) => ({ ...prevCloseAnamnesis, [name]: newValue }))
+  }
+
+  /*const onNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const name = event.currentTarget.value
+    console.log('newValue: '+name) 
     setCloseAnamnesis((prevCloseAnamnesis) => ({ ...prevCloseAnamnesis, name }))
   }
 
-  const onCloseAnamnesisDateChange = (closeAnamnesisDate: Date) => {
-    if (closeAnamnesisDate) {
+  const onDescriptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const description = event.currentTarget.value
+    setCloseAnamnesis((prevCloseAnamnesis) => ({ ...prevCloseAnamnesis, description }))
+  }*/
+
+  const onDateChange = (date: Date) => {
+    if (date) {
       setCloseAnamnesis((prevCloseAnamnesis) => ({
         ...prevCloseAnamnesis,
-        closeAnamnesisDate: closeAnamnesisDate.toISOString(),
+        closeAnamnesisDate: date.toISOString(),
       }))
     }
   }
 
-  const onDescriptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const description = event.target.value
-    setCloseAnamnesis((prevCloseAnamnesis) => ({ ...prevCloseAnamnesis, description }))
-  }
+  const body = <CloseAnamnesisLayout
+    closeAnamnesis={closeAnamnesis}
+    closeAnamnesisError={closeAnamnesisError} 
+    onChange={(name: string, event: React.ChangeEvent<HTMLInputElement>) => onValueChange(name, event)}
+    onDateChange={(date: Date) => onDateChange(date)}
+    isEditable={true}
+    isRequired={true}
+  />
 
-  const body = (
+  const body0 = (
     <>
       <form>
         {closeAnamnesisError && (
@@ -64,16 +85,14 @@ const AddCloseAnamnesisModal = (props: Props) => {
             <div className="form-group">
               <TextInputWithLabelFormGroup
                 name="name"
-                //label={t('patient.medicalrecords.closeAnamnesisName')}
-                label={'labale name'}
+                label={t('patient.closeAnamneses.closeAnamnesisName')}
                 isEditable
-                //placeholder={t('patient.medicalrecords.closeAnamnesisName')}
-                placeholder={'ph name'}
+                placeholder={t('patient.closeAnamneses.closeAnamnesisName')}
                 value={closeAnamnesis.name}
-                onChange={onNameChange}
+                onChange={(event) => onValueChange('name', event)}
                 isRequired
-                feedback={t(closeAnamnesisError?.name || '')}
-                isInvalid={!!closeAnamnesisError?.name}
+                feedback={t(closeAnamnesisError?.name || '')} //mensaje de que campo es requerido
+                isInvalid={!!closeAnamnesisError?.name} //muestra el mensaje
               />
             </div>
           </div>
@@ -82,17 +101,15 @@ const AddCloseAnamnesisModal = (props: Props) => {
           <div className="col-md-12">
             <div className="form-group">
               <TextInputWithLabelFormGroup
-                name="name"
-                //label={t('patient.medicalrecords.closeAnamnesisAperture')}
-                label={'label description'}
+                name="size"
+                label={t('patient.closeAnamneses.closeAnamnesisSize')}
                 isEditable
-                //placeholder={t('patient.medicalrecords.closeAnamnesisAperture')}
-                placeholder={'ph description'}
-                value={closeAnamnesis.description}
-                onChange={onDescriptionChange}
+                placeholder={t('patient.closeAnamneses.closeAnamnesisSize')}
+                value={closeAnamnesis.size}
+                onChange={(event) => onValueChange('size', event)}
                 isRequired
-                feedback={t(closeAnamnesisError?.name || '')}
-                isInvalid={!!closeAnamnesisError?.name}
+                feedback={t(closeAnamnesisError?.size || '')}
+                isInvalid={!!closeAnamnesisError?.size}
               />
             </div>
           </div>
@@ -101,11 +118,10 @@ const AddCloseAnamnesisModal = (props: Props) => {
           <div className="col-md-12">
             <DatePickerWithLabelFormGroup
               name="closeAnamnesisDate"
-              //label={t('patient.medicalrecords.closeAnamnesisDate')}
-              label={'labael date'}
+              label={t('patient.closeAnamneses.closeAnamnesisDate')}
               value={new Date(closeAnamnesis.closeAnamnesisDate)}
               isEditable
-              onChange={onCloseAnamnesisDateChange}
+              onChange={onDateChange}
               isRequired
               feedback={t(closeAnamnesisError?.date || '')}
               isInvalid={!!closeAnamnesisError?.date}
@@ -115,11 +131,12 @@ const AddCloseAnamnesisModal = (props: Props) => {
       </form>
     </>
   )
+  console.log(body0)
   return (
     <Modal
       show={show}
       toggle={onCloseButtonClick}
-      title={t('patient.medicalrecords.new')}
+      title={t('patient.closeAnamneses.new')}
       body={body}
       closeButton={{
         children: t('actions.cancel'),
@@ -127,7 +144,7 @@ const AddCloseAnamnesisModal = (props: Props) => {
         onClick: onCloseButtonClick,
       }}
       successButton={{
-        children: t('patient.medicalrecords.new'),
+        children: t('patient.closeAnamneses.new'),
         color: 'success',
         icon: 'add',
         iconLocation: 'left',

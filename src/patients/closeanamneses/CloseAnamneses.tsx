@@ -11,9 +11,10 @@ import { RootState } from '../../shared/store'
 import AddCloseAnamnesisModal from './AddCloseAnamnesisModal'
 import EditCloseAnamnesisModal from './EditCloseAnamnesisModal'
 
-import TextInputWithLabelFormGroup from '../../shared/components/input/TextInputWithLabelFormGroup'
-
-import { updatePatient } from '../patient-slice'
+import { updatePatient, removeCloseAnamnesisError } from '../patient-slice'
+import CloseAnamnesisLayout from './CloseAnamnesisLayout'
+import { CustomPanel} from '../../shared/components/custom/CustomPanel'
+import { Line } from "react-chartjs-2"
 
 interface Props {
   patient: Patient
@@ -28,18 +29,18 @@ const CloseAnamneses = (props: Props) => {
   const [showEditCloseAnamnesisModal, setShowEditCloseAnamnesisModal] = useState(false)
   const [editCloseAnamnesis, setEditCloseAnamnesis] = useState({
     id: '',
+    title: '',
     name: '',
     closeAnamnesisDate: new Date().toISOString(),
-    description: ''   
+    size: ''   
   })
   const [index, setIndex] = useState(0)
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState<boolean>(false)
+  //const setButtonToolBar = useButtonToolbarSetter()
 
   const breadcrumbs = [
     {
-      //i18nKey: 'patient.diagnoses.label',
-      i18nKey: 'patient.medicalrecords.label', //check this
-      //location: `/patients/${patient.id}/diagnoses`,
+      i18nKey: 'patient.closeAnamneses.label',
       location: `/patients/${patient.id}/closeanamneses`,
     },
   ]
@@ -47,22 +48,23 @@ const CloseAnamneses = (props: Props) => {
 
   const onAddCloseAnamnesisModalClose = () => {
     setShowCloseAnamnesisModal(false)
+    dispatch(removeCloseAnamnesisError())
   }
 
   const onEditCloseAnamnesisModalClose = () => {
     setShowEditCloseAnamnesisModal(false)
     setEditCloseAnamnesis({
       id: '',
+      title: '',
       name: '',
       closeAnamnesisDate: new Date().toISOString(),
-      description: ''
+      size: ''
     })
   }
 
   const onClick = (entry: CloseAnamnesis, i: number) => {
     setEditCloseAnamnesis(entry)
     setIndex(i)
-    console.log('entry: '+editCloseAnamnesis.name)
     setShowEditCloseAnamnesisModal(true)
   }
 
@@ -76,7 +78,7 @@ const CloseAnamneses = (props: Props) => {
   }
 
   const onDeleteSuccess = () => {
-    Toast('success', t('states.success'), t('scheduling.appointment.successfullyDeleted'))
+    Toast('success', t('states.success'), t('scheduling.appointment.successfullyDeleted')) //check this
   }
 
   const onDeleteConfirmationButtonClick = () => {
@@ -96,75 +98,76 @@ const CloseAnamneses = (props: Props) => {
       dispatch(updatePatient(newPatient, onDeleteSuccess))
   }
 
+  const dataSize = patient.closeAnamneses?.map((a: CloseAnamnesis) => (
+    {date: a.closeAnamnesisDate, size:a.size}))
+
+  const graphData = {
+    labels: dataSize?.map(a => a.date),
+    datasets: [
+      {
+        label: "First dataset",
+        data: dataSize?.map(a => a.size),
+        fill: true,
+        backgroundColor: "rgba(75,192,192,0.2)",
+        borderColor: "rgba(75,192,192,1)"
+      }
+    ]
+  }
+
   const entries = patient.closeAnamneses?.map((entry:CloseAnamnesis, i) => {
+    const buttonEdit = <Button
+      outlined
+      color="success"
+      icon="edit"
+      iconLocation="left"
+      size="small"
+      onClick={() => {onClick(entry, i); setShowEditCloseAnamnesisModal(true)}}
+    >
+      {t('actions.edit')}
+    </Button>
+    const buttonDelete = <Button
+      color="danger"
+      icon="remove"
+      iconLocation="left"
+      size="small"
+      onClick={(event) => {getIndex(i); onCloseAnamnesisDeleteButtonClick(event)}}
+    >
+      {t('actions.delete')}
+    </Button>
+    const buttons = [buttonEdit, buttonDelete]
+    const footer = <div className="row d-flex justify-content-between">
+      <div className="col-4">
+        {'Date: '+entry.closeAnamnesisDate}
+      </div>
+      <div className="button-toolbar">
+        {permissions.includes(Permissions.AddDiagnosis) && ( //check permisions 
+        buttons
+        )}
+      </div>
+    </div>
+
     //const error = errors ? errors[i] : undefined
+    //creo que va algo en la linea entre Panel y div abajo en return
     return (
       <>
-      <Panel key={entry.id} title={t('patient.basicInformation')} color="primary" collapsible >
-        
-        <div className="row">
-          <div className="col-md-12 d-flex justify-content-end">
-            {permissions.includes(Permissions.AddDiagnosis) && ( //check permisions
-              <Button
-                outlined
-                color="success"
-                icon="add"
-                iconLocation="left"
-                onClick={() => {onClick(entry, i); setShowEditCloseAnamnesisModal(true)}}
-              >
-                {'fix Edit'}
-              </Button>
-            )}
-          </div>
-          <div className="col-md-12 d-flex justify-content-end">
-            {permissions.includes(Permissions.AddDiagnosis) && ( //check permisions
-              <Button
-                outlined
-                color="success"
-                icon="add"
-                iconLocation="left"
-                onClick={(event) => {getIndex(i); onCloseAnamnesisDeleteButtonClick(event)}}
-              >
-                {'delete'}
-              </Button>
-            )}
-          </div>
-          <div className="col-md-2">
-            <TextInputWithLabelFormGroup key={entry.id}
-              //label={t('Name')}
-              label={'Name'}
-              name={`name${i}`}
-              //value={patient.closeAnamneses?.map((a:CloseAnamnesis) => (a.name))[0]}
-              value={entry.name}
-              //isEditable={isEditable}
-              //onChange={(event) => onFieldChange('prefix', event.currentTarget.value)}
-              //isInvalid={!!error?.prefix}
-              //feedback={t(error?.prefix)}
-            />
-          </div>
-          <div className="col-md-4">
-            <TextInputWithLabelFormGroup key={entry.id}
-              //label={t('Descripción')}
-              label={'Descripción'}
-              name={`description${i}`}
-              //value={patient.closeAnamneses?.map((a:CloseAnamnesis) => (a.description))[0]}
-              value={entry.description}
-              //isEditable={isEditable}
-              //onChange={(event) => onFieldChange('givenName', event.currentTarget.value)}
-              //isRequired
-              //isInvalid={!!error?.givenName}
-              //feedback={t(error?.givenName)}
-            />
-          </div>
-        </div>
-      </Panel>
       
+      <CustomPanel key={entry.id} footer={footer} title={entry.title} color="primary" collapsible >
+        <CloseAnamnesisLayout key={entry.id}
+          closeAnamnesis={entry}
+          isEditable={false}
+          isRequired={false}
+          index={i}
+          forPanel={true}
+        />
+      </CustomPanel>
+      <br />
       </>
     )
   })
 
   return (
     <>
+    
       <div className="row">
         <div className="col-md-12 d-flex justify-content-end">
           {permissions.includes(Permissions.AddDiagnosis) && ( //check permisions
@@ -175,7 +178,7 @@ const CloseAnamneses = (props: Props) => {
               iconLocation="left"
               onClick={() => setShowCloseAnamnesisModal(true)}
             >
-              {t('patient.medicalrecords.new')}
+              {t('patient.closeAnamneses.new')}
             </Button>
           )}
         </div>
@@ -184,19 +187,23 @@ const CloseAnamneses = (props: Props) => {
       {(!patient.closeAnamneses || patient.closeAnamneses.length === 0) && (
         <Alert
           color="warning"
-          //title={t('patient.diagnoses.warning.noDiagnoses')}
-          //message={t('patient.diagnoses.addDiagnosisAbove')}
-          title={t('patient.medicalrecords.warning.noMedicalRecords')} //check this
-          message={t('patient.medicalrecords.addMedicalRecordAbove')} //check this
+          title={t('patient.closeAnamneses.warning.noCloseAnamneses')} 
+          message={t('patient.closeAnamneses.addCloseAnamnesisAbove')} 
         />
       )}
       <div>
         {entries}
       </div>
+      <div>
+        <Panel title={'Data Plot'} color={'primary'} collapsible>
+          <Line data={graphData} />
+        </Panel> 
+      </div>
       <AddCloseAnamnesisModal show={showCloseAnamnesisModal} onCloseButtonClick={onAddCloseAnamnesisModalClose} />
       <EditCloseAnamnesisModal editCloseAnamnesis={editCloseAnamnesis} index={index} show={showEditCloseAnamnesisModal} onCloseButtonClick={onEditCloseAnamnesisModalClose} />
       <Modal
-        body={t('scheduling.appointment.deleteConfirmationMessage')}
+        //body={t('scheduling.appointment.deleteConfirmationMessage')} //check trans
+        body={t('patient.closeAnamneses.deleteConfirmationMessage')} //check trans
         buttonsAlignment="right"
         show={showDeleteConfirmation}
         closeButton={{

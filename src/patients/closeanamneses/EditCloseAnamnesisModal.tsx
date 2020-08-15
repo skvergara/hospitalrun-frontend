@@ -9,7 +9,8 @@ import useTranslator from '../../shared/hooks/useTranslator'
 import CloseAnamnesis from '../../shared/model/CloseAnamnesis'
 import Patient from '../../shared/model/Patient'
 import { RootState } from '../../shared/store'
-import { updatePatient } from '../patient-slice'
+import { /*updatePatient,*/ updateCloseAnamnesis } from '../patient-slice'
+import CloseAnamnesisLayout from './CloseAnamnesisLayout'
 
 interface Props {
   editCloseAnamnesis: CloseAnamnesis
@@ -26,16 +27,20 @@ const EditCloseAnamnesisModal = (props: Props) => {
   const history = useHistory()
 
   const [closeAnamnesis, setCloseAnamnesis] = useState({
+    //id: editCloseAnamnesis.id,
+    title: editCloseAnamnesis.title, 
     name: editCloseAnamnesis.name,
     closeAnamnesisDate: editCloseAnamnesis.closeAnamnesisDate,
-    description: editCloseAnamnesis.description    
+    size: editCloseAnamnesis.size    
   })
 
   useEffect(() => {
     setCloseAnamnesis({
+      //id: editCloseAnamnesis.id,
+      title: editCloseAnamnesis.title, 
       name: editCloseAnamnesis.name,
       closeAnamnesisDate: editCloseAnamnesis.closeAnamnesisDate,
-      description: editCloseAnamnesis.description 
+      size: editCloseAnamnesis.size 
     }) // eslint-disable-next-line
   }, [show])
 
@@ -67,7 +72,8 @@ const EditCloseAnamnesisModal = (props: Props) => {
     index: number
   ) => {
     //if (onChange) {
-      const newValue = event.currentTarget.value 
+      const newValue = event.currentTarget.value
+      console.log('newValue: '+newValue) 
       setCloseAnamnesis((prevCloseAnamnesis) => ({ ...prevCloseAnamnesis, [name]: newValue }))
 
       const currentCloseAnamnesis = { ...data[index], [name]: newValue }
@@ -77,18 +83,18 @@ const EditCloseAnamnesisModal = (props: Props) => {
     //}
   }
 
-  const onCloseAnamnesisDateChange = (closeAnamnesisDateInput: Date, index: number) => {
+  const onDateChange = (closeAnamnesisDateInput: Date, index: number) => {
     if (closeAnamnesisDateInput) {
       setCloseAnamnesis((prevCloseAnamnesis) => ({
         ...prevCloseAnamnesis,
         closeAnamnesisDate: closeAnamnesisDateInput.toISOString(),
       }))
-    }
     
-    const currentCloseAnamnesis = { ...data[index], closeAnamnesisDate: closeAnamnesisDateInput.toISOString() } //hay que usar el key del Objeto: e.g. name y no value
-    const newCloseAnamneses = [...data]
-    newCloseAnamneses.splice(index, 1, currentCloseAnamnesis)
-    onFieldChange('closeAnamneses', newCloseAnamneses)
+      const currentCloseAnamnesis = { ...data[index], closeAnamnesisDate: closeAnamnesisDateInput.toISOString() } //hay que usar el key del Objeto: e.g. name y no value
+      const newCloseAnamneses = [...data]
+      newCloseAnamneses.splice(index, 1, currentCloseAnamnesis)
+      onFieldChange('closeAnamneses', newCloseAnamneses)
+    }
   }
 
   const onSuccessfulSave = (updatedPatient: Patient) => {
@@ -96,12 +102,12 @@ const EditCloseAnamnesisModal = (props: Props) => {
     Toast(
       'success',
       t('states.success'),
-      `${t('patients.successfullyUpdated')} ${patient.fullName}`,
+      `${t('patient.closeAnamneses.successfullyUpdated')}`,
     )
   }
 
   const onSave = async () => {
-    await dispatch(updatePatient(patient, onSuccessfulSave))
+    await dispatch(updateCloseAnamnesis(patient, closeAnamnesis as CloseAnamnesis, onSuccessfulSave))
   }
 
   const onSaveButtonClick = () => {
@@ -113,7 +119,17 @@ const EditCloseAnamnesisModal = (props: Props) => {
     onCloseButtonClick()
   }
 
-  const body = (
+  const body = <CloseAnamnesisLayout
+    closeAnamnesis={closeAnamnesis}
+    closeAnamnesisError={closeAnamnesisError} 
+    onChange={(name: string, event: React.ChangeEvent<HTMLInputElement>) => onValueChange(name, event, index)}
+    onDateChange={(date: Date) => onDateChange(date, index)}
+    isEditable={true}
+    isRequired={true}
+  />
+
+  //body0 es el antiguo metodo, concentrado en body y CloseAnamnesisLayout... dejar como referencia mientras
+  const body0 = (
     <>
       <form>
         {closeAnamnesisError && (
@@ -128,13 +144,10 @@ const EditCloseAnamnesisModal = (props: Props) => {
             <div className="form-group">
               <TextInputWithLabelFormGroup
                 name="name"
-                //label={t('patient.medicalrecords.closeAnamnesisName')}
-                label={'labale name'}
+                label={t('patient.closeAnamneses.closeAnamnesisName')}
                 isEditable
-                //placeholder={t('patient.medicalrecords.closeAnamnesisName')}
-                placeholder={'ph name'}
+                placeholder={t('patient.closeAnamneses.closeAnamnesisName')}
                 value={closeAnamnesis.name}
-                //onChange={onNameChange}
                 onChange={(event: any) => onValueChange('name', event, index)}
                 isRequired
                 feedback={t(closeAnamnesisError?.name || '')}
@@ -148,16 +161,14 @@ const EditCloseAnamnesisModal = (props: Props) => {
             <div className="form-group">
               <TextInputWithLabelFormGroup
                 name="name"
-                //label={t('patient.medicalrecords.closeAnamnesisAperture')}
-                label={'label description'}
+                label={t('patient.closeAnamneses.closeAnamnesisSize')}
                 isEditable
-                //placeholder={t('patient.medicalrecords.closeAnamnesisAperture')}
-                placeholder={'ph description'}
-                value={closeAnamnesis.description}
-                onChange={(event: any) => onValueChange('description', event, index)}
+                placeholder={t('patient.closeAnamneses.closeAnamnesisSize')}
+                value={closeAnamnesis.size}
+                onChange={(event: any) => onValueChange('size', event, index)}
                 isRequired
-                feedback={t(closeAnamnesisError?.name || '')}
-                isInvalid={!!closeAnamnesisError?.name}
+                feedback={t(closeAnamnesisError?.size || '')}
+                isInvalid={!!closeAnamnesisError?.size}
               />
             </div>
           </div>
@@ -166,11 +177,10 @@ const EditCloseAnamnesisModal = (props: Props) => {
           <div className="col-md-12">
             <DatePickerWithLabelFormGroup
               name="closeAnamnesisDate"
-              //label={t('patient.medicalrecords.closeAnamnesisDate')}
-              label={'labael date'}
+              label={t('patient.closeAnamneses.closeAnamnesisDate')}
               value={new Date(closeAnamnesis.closeAnamnesisDate)}
               isEditable
-              onChange={(date: Date) => onCloseAnamnesisDateChange(date, index)}
+              onChange={(date: Date) => onDateChange(date, index)}
               isRequired
               feedback={t(closeAnamnesisError?.date || '')}
               isInvalid={!!closeAnamnesisError?.date}
@@ -180,12 +190,12 @@ const EditCloseAnamnesisModal = (props: Props) => {
       </form>
     </>
   )
+  console.log(body0)
   return (
     <Modal
       show={show}
       toggle={onCancel}
-      //title={t('patient.medicalrecords.new')}
-      title={'Edit Close Anamnesis'}
+      title={t('patient.closeAnamneses.edit')}
       body={body}
       closeButton={{
         children: t('actions.cancel'),
@@ -194,9 +204,9 @@ const EditCloseAnamnesisModal = (props: Props) => {
         onClick: onCancel,
       }}
       successButton={{
-        children: t('patient.medicalrecords.new'),
+        children: t('patient.closeAnamneses.edit'),
         color: 'success',
-        icon: 'add',
+        icon: 'edit',
         iconLocation: 'left',
         onClick: onSaveButtonClick,
       }}

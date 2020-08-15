@@ -69,9 +69,10 @@ interface AddMedicalRecordError {
 
 interface AddCloseAnamnesisError {
   message?: string
+  title?: string
   name?: string
   date?: string
-  description?: string
+  size?: string
 }
 
 interface AddNoteError {
@@ -162,6 +163,10 @@ const patientSlice = createSlice({
       state.status = 'error'
       state.closeAnamnesisError = payload
     },
+    removeCloseAnamnesisError(state) {
+      state.status = 'completed'
+      state.closeAnamnesisError = undefined
+    },
     addCarePlanError(state, { payload }: PayloadAction<AddRelatedPersonError>) {
       state.status = 'error'
       state.carePlanError = payload
@@ -184,6 +189,7 @@ export const {
   addNoteError,
   addMedicalRecordError,
   addCloseAnamnesisError,
+  removeCloseAnamnesisError,
   addCarePlanError,
 } = patientSlice.actions
 
@@ -427,16 +433,20 @@ export const addMedicalRecord = (
 function validateCloseAnamnesis(closeAnamnesis: CloseAnamnesis) {
   const error: AddCloseAnamnesisError = {}
 
+  if (!closeAnamnesis.title) {
+    error.title = 'patient.closeAnamneses.error.titleRequired'
+  }
+  
   if (!closeAnamnesis.name) {
-    error.name = 'patient.medicalrecords.error.nameRequired'
+    error.name = 'patient.closeAnamneses.error.nameRequired'
   }
 
   if (!closeAnamnesis.closeAnamnesisDate) {
-    error.date = 'patient.medicalrecords.error.dateRequired' 
+    error.date = 'patient.closeAnamneses.error.dateRequired' 
   }
 
-  if (!closeAnamnesis.description) {
-    error.description = 'patient.medicalrecords.error.dateRequired' 
+  if (!closeAnamnesis.size) {
+    error.size = 'patient.closeAnamneses.error.sizeRequired' 
   }
 
   return error
@@ -457,7 +467,27 @@ export const addCloseAnamnesis = (
 
     await dispatch(updatePatient(patient, onSuccess))
   } else {
-    newCloseAnamnesisError.message = 'patient.medicalrecords.error.unableToAdd' //fix trans
+    newCloseAnamnesisError.message = 'patient.closeAnamneses.error.unableToAdd'
+    dispatch(addCloseAnamnesisError(newCloseAnamnesisError))
+  }
+}
+
+export const updateCloseAnamnesis = (
+  patient: Patient,
+  closeAnamnesis: CloseAnamnesis,
+  onSuccess?: (patient: Patient) => void,
+): AppThunk => async (dispatch) => {
+  const newCloseAnamnesisError = validateCloseAnamnesis(closeAnamnesis)
+
+  if (isEmpty(newCloseAnamnesisError)) {
+    /*const patient = await PatientRepository.find(patientId)
+    const closeAnamneses = patient.closeAnamneses || []
+    closeAnamneses.push({ id: uuid(), ...closeAnamnesis })
+    patient.closeAnamneses = closeAnamneses*/
+
+    await dispatch(updatePatient(patient, onSuccess))
+  } else {
+    newCloseAnamnesisError.message = 'patient.closeAnamneses.error.unableToAdd'
     dispatch(addCloseAnamnesisError(newCloseAnamnesisError))
   }
 }
@@ -585,3 +615,4 @@ export const addCarePlan = (
 }
 
 export default patientSlice.reducer
+export type { AddCloseAnamnesisError }
