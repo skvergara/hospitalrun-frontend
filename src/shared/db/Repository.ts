@@ -164,16 +164,17 @@ export default class Repository<T extends AbstractDBModel> {
     const { id, rev, ...dataToSave } = entity
 
     try {
-      await this.find(entity.id)
+      const dbEntity = await this.find(entity.id)
+      
       const entityToUpdate = {
         id,
-        rev,
+        rev: dbEntity.rev,
         ...dataToSave,
         updatedAt: new Date().toISOString(),
       }
 
       await this.db.rel.save(this.type, entityToUpdate)
-      return this.find(entity.id)
+      return this.find(entityToUpdate.id)
     } catch (error) {
       return this.save(entity)
     }
