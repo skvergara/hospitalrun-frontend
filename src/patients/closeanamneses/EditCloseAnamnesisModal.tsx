@@ -28,19 +28,19 @@ const EditCloseAnamnesisModal = (props: Props) => {
 
   const [closeAnamnesis, setCloseAnamnesis] = useState({
     //id: editCloseAnamnesis.id,
-    title: editCloseAnamnesis.title, 
+    title: editCloseAnamnesis.title,
     name: editCloseAnamnesis.name,
     closeAnamnesisDate: editCloseAnamnesis.closeAnamnesisDate,
-    size: editCloseAnamnesis.size    
+    size: editCloseAnamnesis.size
   })
 
   useEffect(() => {
     setCloseAnamnesis({
       //id: editCloseAnamnesis.id,
-      title: editCloseAnamnesis.title, 
+      title: editCloseAnamnesis.title,
       name: editCloseAnamnesis.name,
       closeAnamnesisDate: editCloseAnamnesis.closeAnamnesisDate,
-      size: editCloseAnamnesis.size 
+      size: editCloseAnamnesis.size
     }) // eslint-disable-next-line
   }, [show])
 
@@ -58,11 +58,11 @@ const EditCloseAnamnesisModal = (props: Props) => {
 
   const onFieldChange = (name: string, value: string | boolean | CloseAnamnesis[]) => {
     //if (onChange) {
-      const newPatient = {
-        ...patient,
-        [name]: value,
-      }
-      onPatientChange(newPatient)
+    const newPatient = {
+      ...patient,
+      [name]: value,
+    }
+    onPatientChange(newPatient)
     //}
   }
 
@@ -72,14 +72,14 @@ const EditCloseAnamnesisModal = (props: Props) => {
     index: number
   ) => {
     //if (onChange) {
-      const newValue = event.currentTarget.value
-      console.log('newValue: '+newValue) 
-      setCloseAnamnesis((prevCloseAnamnesis) => ({ ...prevCloseAnamnesis, [name]: newValue }))
+    const newValue = event.currentTarget.value
+    console.log('newValue: ' + newValue)
+    setCloseAnamnesis((prevCloseAnamnesis) => ({ ...prevCloseAnamnesis, [name]: newValue }))
 
-      const currentCloseAnamnesis = { ...data[index], [name]: newValue }
-      const newCloseAnamneses = [...data]
-      newCloseAnamneses.splice(index, 1, currentCloseAnamnesis)
-      onFieldChange('closeAnamneses', newCloseAnamneses)
+    const currentCloseAnamnesis = { ...data[index], [name]: newValue }
+    const newCloseAnamneses = [...data]
+    newCloseAnamneses.splice(index, 1, currentCloseAnamnesis)
+    onFieldChange('closeAnamneses', newCloseAnamneses)
     //}
   }
 
@@ -89,7 +89,7 @@ const EditCloseAnamnesisModal = (props: Props) => {
         ...prevCloseAnamnesis,
         closeAnamnesisDate: closeAnamnesisDateInput.toISOString(),
       }))
-    
+
       const currentCloseAnamnesis = { ...data[index], closeAnamnesisDate: closeAnamnesisDateInput.toISOString() } //hay que usar el key del Objeto: e.g. name y no value
       const newCloseAnamneses = [...data]
       newCloseAnamneses.splice(index, 1, currentCloseAnamnesis)
@@ -121,7 +121,7 @@ const EditCloseAnamnesisModal = (props: Props) => {
 
   const body = <CloseAnamnesisLayout
     closeAnamnesis={closeAnamnesis}
-    closeAnamnesisError={closeAnamnesisError} 
+    closeAnamnesisError={closeAnamnesisError}
     onChange={(name: string, event: React.ChangeEvent<HTMLInputElement>) => onValueChange(name, event, index)}
     onDateChange={(date: Date) => onDateChange(date, index)}
     isEditable={true}

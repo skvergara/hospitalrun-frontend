@@ -12,7 +12,9 @@ import { ButtonBarProvider } from './page-header/button-toolbar/ButtonBarProvide
 import ButtonToolBar from './page-header/button-toolbar/ButtonToolBar'
 import Patients from './patients/Patients'
 import Appointments from './scheduling/appointments/Appointments'
-import Settings from './settings/Settings'
+//import Settings from './settings/Settings'
+import Settings2 from './settings/Settings2'
+
 import Navbar from './shared/components/navbar/Navbar'
 import { NetworkStatusMessage } from './shared/components/network-status'
 import Sidebar from './shared/components/Sidebar'
@@ -39,7 +41,7 @@ const HospitalRun = () => {
               role="main"
               className={`${
                 sidebarCollapsed ? 'col-md-10 col-lg-11' : 'col-md-9 col-lg-10'
-              } ml-sm-auto px-4`}
+                } ml-sm-auto px-4`}
             >
               <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 className="h2">{title}</h1>
@@ -53,7 +55,7 @@ const HospitalRun = () => {
                   <Route path="/patients" component={Patients} />
                   <Route path="/labs" component={Labs} />
                   <Route path="/incidents" component={Incidents} />
-                  <Route path="/settings" component={Settings} />
+                  <Route path="/settings" component={Settings2} />
                   <Route path="/imaging" component={Imagings} />
                 </Switch>
               </div>

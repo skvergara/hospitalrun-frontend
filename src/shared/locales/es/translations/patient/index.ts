@@ -5,8 +5,8 @@ export default {
     lastName: 'Segundo Nombre',
     suffix: 'Sufijo',
     prefix: 'Título',
-    givenName: 'Primer Apellido',
-    familyName: 'Segundo Apellido',
+    givenName: 'Nombres',
+    familyName: 'Apellidos',
     dateOfBirth: 'Fecha de Nacimiento',
     approximateDateOfBirth: 'Fecha aproximada de nacimiento',
     age: 'Edad',
@@ -33,8 +33,8 @@ export default {
     basicInformation: 'Información Básica',
     generalInformation: 'Información General',
     contactInformation: 'Información de Contacto',
-    unknownDateOfBirth: 'Desconocido',
-    relatedPerson: 'Parentesco',
+    unknownDateOfBirth: 'Ingresar edad',
+    relatedPerson: 'Nombre del Pariente',
     relatedPersons: {
       error: {
         unableToAddRelatedPerson: 'Imposible añadir nuevo pariente.',
@@ -44,14 +44,18 @@ export default {
       label: 'Parientes',
       new: 'Nuevo Pariente',
       add: 'Añadir Pariente',
-      relationshipType: 'Tipo de Parentesco',
+      relationshipType: 'Parentesco',
       warning: {
         noRelatedPersons: 'Sin Parientes',
       },
       addRelatedPersonAbove: 'Añadir pariente usando el botón de arriba.',
     },
     appointments: {
-      new: 'Añadir Cita',
+      new: 'Añadir cita',
+      warning: {
+        noAppointments: 'Sin citas',
+      },
+      addAppointmentAbove: 'Agregar una cita con el boton superior.',
     },
     allergies: {
       label: 'Alergias',
@@ -82,6 +86,46 @@ export default {
       },
       addDiagnosisAbove: 'Añadir Diagnóstico usando el Botón de Arriba.',
       successfullyAdded: 'Se ha añadido nuevo Diagnóstico!',
+    },
+    medicalrecords: {
+      label: 'Registros Médicos',
+      new: 'Agregar Registro Médico',
+      medicalRecordName: 'Nombre',
+      medicalRecordDate: 'Fecha',
+      medicalRecordAperture: 'Medical Record Aperture',
+      warning: {
+        noMedicalRecords: 'Sin registros médicos',
+      },
+      error: {
+        nameRequired: 'Se requiere un nombre.',
+        dateRequired: 'Se requiere una fecha.',
+        unableToAdd: 'Error al agregar nuevo registro médico.',
+      },
+      addMedicalRecordAbove: 'Agregar registro medicon con el boton superior.',
+      successfullyAdded: 'Registro médico agregado exitosamente!',
+    },
+    closeAnamneses: {
+      label: 'Anamnesis próxima',
+      new: 'Agregar',
+      edit: 'Editar',
+      closeAnamnesisTitle: 'Título',
+      closeAnamnesisName: 'Nombre',
+      closeAnamnesisSize: 'Tamaño',
+      closeAnamnesisDate: 'Fecha',
+      warning: {
+        noCloseAnamneses: 'Sin Anamnesis próximas',
+      },
+      error: {
+        titleRequired: 'Se requiere un título.',
+        nameRequired: 'Se requiere un nombre.',
+        sizeRequired: 'Se requiere un tamaño.',
+        dateRequired: 'Se requiere una fecha.',
+        unableToAdd: 'No se ha podido agregar una anamnesis próxima',
+      },
+      addCloseAnamnesisAbove: 'Agregar una anamnesis próxima con el boton superior.',
+      successfullyAdded: 'Nueva Anamnesis próxima agregada!',
+      successfullyUpdated: 'Anamnesis próxima actualizada!',
+      deleteConfirmationMessage: 'Estas seguro que deseas borrar esta anamnesis próxima?'
     },
     note: 'Notas',
     notes: {
@@ -127,8 +171,8 @@ export default {
       },
     },
     types: {
-      charity: 'Caridad',
-      private: 'Privado',
+      charity: 'Gratis',
+      private: 'Pagado',
     },
     errors: {
       createPatientError: 'Imposible crear nuevo Paciente.',

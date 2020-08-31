@@ -18,9 +18,9 @@ interface Props {
 const AddCloseAnamnesisModal = (props: Props) => {
   const { show, onCloseButtonClick } = props
   const dispatch = useDispatch()
-  const { closeAnamnesisError, patient } = useSelector((state: RootState) => {console.log(state.patient); return state.patient})
+  const { closeAnamnesisError, patient } = useSelector((state: RootState) => { console.log(state.patient); return state.patient })
   const { t } = useTranslator()
-  
+
   const [closeAnamnesis, setCloseAnamnesis] = useState({ title: '', name: '', closeAnamnesisDate: new Date().toISOString(), size: '' })
 
   useEffect(() => {
@@ -37,7 +37,7 @@ const AddCloseAnamnesisModal = (props: Props) => {
 
   const onValueChange = (name: string, event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = event.currentTarget.value
-    console.log('newValue: '+newValue) 
+    console.log('newValue: ' + newValue)
     setCloseAnamnesis((prevCloseAnamnesis) => ({ ...prevCloseAnamnesis, [name]: newValue }))
   }
 
@@ -63,7 +63,7 @@ const AddCloseAnamnesisModal = (props: Props) => {
 
   const body = <CloseAnamnesisLayout
     closeAnamnesis={closeAnamnesis}
-    closeAnamnesisError={closeAnamnesisError} 
+    closeAnamnesisError={closeAnamnesisError}
     onChange={(name: string, event: React.ChangeEvent<HTMLInputElement>) => onValueChange(name, event)}
     onDateChange={(date: Date) => onDateChange(date)}
     isEditable={true}

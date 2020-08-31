@@ -24,49 +24,49 @@ const CloseAnamnesisLayout = (props: Props) => {
 
   const onValueChange = (name: string, event: React.ChangeEvent<HTMLInputElement>) => {
     if (onChange) {
-      onChange(name, event) 
+      onChange(name, event)
     }
   }
 
   const body = <>
-      <div className="row">
-        <div className="col-md-12">
-          <div className="form-group">
-            <TextInputWithLabelFormGroup
-              name={`closeAnamnesisName${index}`}
-              label={t('patient.closeAnamneses.closeAnamnesisName')}
-              isEditable={isEditable}
-              placeholder={t('patient.closeAnamneses.closeAnamnesisName')}
-              value={closeAnamnesis.name}
-              onChange={(event) => onValueChange('name', event)}
-              isRequired={isRequired}
-              feedback={t(closeAnamnesisError?.name || '')} //mensaje de que campo es requerido
-              isInvalid={!!closeAnamnesisError?.name} //muestra el mensaje
-            />
-          </div>
+    <div className="row">
+      <div className="col-md-12">
+        <div className="form-group">
+          <TextInputWithLabelFormGroup
+            name={`closeAnamnesisName${index}`}
+            label={t('patient.closeAnamneses.closeAnamnesisName')}
+            isEditable={isEditable}
+            placeholder={t('patient.closeAnamneses.closeAnamnesisName')}
+            value={closeAnamnesis.name}
+            onChange={(event) => onValueChange('name', event)}
+            isRequired={isRequired}
+            feedback={t(closeAnamnesisError?.name || '')} //mensaje de que campo es requerido
+            isInvalid={!!closeAnamnesisError?.name} //muestra el mensaje
+          />
         </div>
       </div>
-      <div className="row">
-        <div className="col-md-12">
-          <div className="form-group">
-            <TextInputWithLabelFormGroup
-              name={`closeAnamnesisSize${index}`}
-              label={t('patient.closeAnamneses.closeAnamnesisSize')}
-              isEditable={isEditable}
-              placeholder={t('patient.closeAnamneses.closeAnamnesisSize')}
-              value={closeAnamnesis.size}
-              onChange={(event) => onValueChange('size', event)}
-              isRequired={isRequired}
-              feedback={t(closeAnamnesisError?.size || '')}
-              isInvalid={!!closeAnamnesisError?.size}
-            />
-          </div>
+    </div>
+    <div className="row">
+      <div className="col-md-12">
+        <div className="form-group">
+          <TextInputWithLabelFormGroup
+            name={`closeAnamnesisSize${index}`}
+            label={t('patient.closeAnamneses.closeAnamnesisSize')}
+            isEditable={isEditable}
+            placeholder={t('patient.closeAnamneses.closeAnamnesisSize')}
+            value={closeAnamnesis.size}
+            onChange={(event) => onValueChange('size', event)}
+            isRequired={isRequired}
+            feedback={t(closeAnamnesisError?.size || '')}
+            isInvalid={!!closeAnamnesisError?.size}
+          />
         </div>
       </div>
+    </div>
   </>
 
   if (forPanel) {
-    return(
+    return (
       <>
         <form>
           {body}
@@ -76,7 +76,7 @@ const CloseAnamnesisLayout = (props: Props) => {
   }
 
   else {
-    return(
+    return (
       <>
         <form>
           {closeAnamnesisError && (

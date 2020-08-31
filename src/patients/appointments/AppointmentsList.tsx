@@ -44,8 +44,8 @@ const AppointmentsList = (props: Props) => {
             color="success"
             icon="appointment-add"
             onClick={() => history.push({
-              pathname:'/appointments/new',
-              state:{patient: patient}
+              pathname: '/appointments/new',
+              state: { patient: patient }
             })}
           >
             {t('scheduling.appointments.new')}
@@ -90,15 +90,15 @@ const AppointmentsList = (props: Props) => {
                 ]}
               />
             ) : (
-              <Alert
-                color="warning"
-                title={t('patient.appointments.warning.noAppointments')}
-                message={t('patient.appointments.addAppointmentAbove')}
-              />
-            )
+                <Alert
+                  color="warning"
+                  title={t('patient.appointments.warning.noAppointments')}
+                  message={t('patient.appointments.addAppointmentAbove')}
+                />
+              )
           ) : (
-            <Spinner color="blue" loading size={[10, 25]} type="ScaleLoader" />
-          )}
+              <Spinner color="blue" loading size={[10, 25]} type="ScaleLoader" />
+            )}
         </div>
       </div>
     </>
