@@ -19,7 +19,7 @@ const Navbar = () => {
   // modify image size
   const parentNavbar = document.getElementById('responsive-navbar-nav')
   const image = parentNavbar?.getElementsByTagName('img')[0]
-  
+
   if (image) {
     image.removeAttribute('width')
     image.height = 32
@@ -33,6 +33,7 @@ const Navbar = () => {
   const dividerAboveLabels = [
     'scheduling.appointments.new',
     /*'labs.requests.new',
+    'medications.requests.new',
     'incidents.reports.new',
     'imagings.requests.new',*/
     'settings.label',
@@ -61,7 +62,8 @@ const Navbar = () => {
     pageMap.newAppointment,
     /*pageMap.newLab,
     pageMap.newIncident,
-    pageMap.newImaging,*/
+    pageMap.newImaging,
+    pageMap.newMedication,*/
   ]
 
   return (
@@ -103,7 +105,7 @@ const Navbar = () => {
               type: 'link',
               label: `${t('user.login.currentlySignedInAs')} ${user?.givenName} ${
                 user?.familyName
-              }`,
+                }`,
               onClick: () => {
                 navigateTo('/settings')
               },

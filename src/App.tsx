@@ -1,5 +1,8 @@
+/* eslint-disable no-console */
+
 import { Spinner } from '@hospitalrun/components'
 import React, { Suspense, useEffect, useState } from 'react'
+import { ReactQueryDevtools } from 'react-query-devtools'
 import { useDispatch } from 'react-redux'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
 
@@ -33,14 +36,17 @@ const App: React.FC = () => {
   }
 
   return (
-    <BrowserRouter>
-      <Suspense fallback={<Spinner color="blue" loading size={[10, 25]} type="ScaleLoader" />}>
-        <Switch>
-          <Route exact path="/login" component={Login} />
-          <Route path="/" component={HospitalRun} />
-        </Switch>
-      </Suspense>
-    </BrowserRouter>
+    <>
+      <BrowserRouter>
+        <Suspense fallback={<Spinner color="blue" loading size={[10, 25]} type="ScaleLoader" />}>
+          <Switch>
+            <Route exact path="/login" component={Login} />
+            <Route path="/" component={HospitalRun} />
+          </Switch>
+        </Suspense>
+      </BrowserRouter>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </>
   )
 }
 

@@ -23,11 +23,12 @@ import CarePlanTab from '../care-plans/CarePlanTab'
 import Diagnoses from '../diagnoses/Diagnoses'
 import GeneralInformation from '../GeneralInformation'
 import CloseAnamneses from '../closeanamneses/CloseAnamneses'
-import Labs from '../labs/LabsTab'
+import Labs from '../labs/Labs'
 import Note from '../notes/NoteTab'
 import { fetchPatient } from '../patient-slice'
 import RelatedPerson from '../related-persons/RelatedPersonTab'
 import { getPatientFullName } from '../util/patient-name-util'
+import VisitTab from '../visits/VisitTab'
 
 const getPatientCode = (p: Patient): string => {
   if (p) {
@@ -139,6 +140,11 @@ const ViewPatient = () => {
           label={t('patient.carePlan.label')}
           onClick={() => history.push(`/patients/${patient.id}/care-plans`)}
         />
+        <Tab
+          active={location.pathname === `/patients/${patient.id}/visits`}
+          label={t('patient.visits.label')}
+          onClick={() => history.push(`/patients/${patient.id}/visits`)}
+        />
       </TabsHeader>
       <Panel>
         <Route exact path={path}>
@@ -151,7 +157,7 @@ const ViewPatient = () => {
           <RelatedPerson patient={patient} />
         </Route>
         <Route exact path={`${path}/appointments`}>
-          <AppointmentsList patient={patient} />
+          <AppointmentsList patientId={patient.id} />
         </Route>
         <Route path={`${path}/allergies`}>
           <Allergies patient={patient} />
@@ -159,14 +165,17 @@ const ViewPatient = () => {
         <Route exact path={`${path}/diagnoses`}>
           <Diagnoses patient={patient} />
         </Route>
-        <Route exact path={`${path}/notes`}>
+        <Route path={`${path}/notes`}>
           <Note patient={patient} />
         </Route>
         <Route exact path={`${path}/labs`}>
-          <Labs patientId={patient.id} />
+          <Labs patient={patient} />
         </Route>
         <Route path={`${path}/care-plans`}>
           <CarePlanTab />
+        </Route>
+        <Route path={`${path}/visits`}>
+          <VisitTab />
         </Route>
       </Panel>
     </div>
