@@ -4,14 +4,14 @@ import { isEmpty } from 'lodash'
 import validator from 'validator'
 
 import PatientRepository from '../shared/db/PatientRepository'
-import Allergy from '../shared/model/Allergy'
-import CarePlan from '../shared/model/CarePlan'
 import Diagnosis from '../shared/model/Diagnosis'
 import Note from '../shared/model/Note'
 import MedicalRecord from '../shared/model/MedicalRecord'
 import CloseAnamnesis from '../shared/model/CloseAnamnesis'
 import Patient from '../shared/model/Patient'
 import RelatedPerson from '../shared/model/RelatedPerson'
+import Visit from '../shared/model/Visit'
+import Allergy from '../shared/model/Allergy'
 import { AppThunk } from '../shared/store'
 import { uuid } from '../shared/util/uuid'
 import { cleanupPatient } from './util/set-patient-helper'
@@ -30,6 +30,7 @@ interface PatientState {
   closeAnamnesisError?: AddCloseAnamnesisError
   relatedPersonError?: AddRelatedPersonError
   carePlanError?: AddCarePlanError
+  visitError?: AddVisitError
 }
 
 interface Error {
@@ -59,6 +60,7 @@ interface AddDiagnosisError {
   message?: string
   name?: string
   date?: string
+  status?: string
 }
 
 interface AddMedicalRecordError {
@@ -92,6 +94,14 @@ interface AddCarePlanError {
   condition?: string
 }
 
+interface AddVisitError {
+  message?: string
+  status?: string
+  intent?: string
+  startDateTime?: string
+  endDateTime?: string
+}
+
 const initialState: PatientState = {
   status: 'loading',
   isUpdatedSuccessfully: false,
@@ -106,6 +116,7 @@ const initialState: PatientState = {
   closeAnamnesisError: undefined,
   relatedPersonError: undefined,
   carePlanError: undefined,
+  visitError: undefined,
 }
 
 function start(state: PatientState) {
@@ -171,6 +182,10 @@ const patientSlice = createSlice({
       state.status = 'error'
       state.carePlanError = payload
     },
+    addVisitError(state, { payload }: PayloadAction<AddVisitError>) {
+      state.status = 'error'
+      state.visitError = payload
+    },
   },
 })
 
@@ -191,6 +206,7 @@ export const {
   addCloseAnamnesisError,
   removeCloseAnamnesisError,
   addCarePlanError,
+  addVisitError,
 } = patientSlice.actions
 
 export const fetchPatient = (id: string): AppThunk => async (dispatch) => {
@@ -373,6 +389,13 @@ function validateDiagnosis(diagnosis: Diagnosis) {
     error.date = 'patient.diagnoses.error.dateRequired'
   }
 
+  if (!diagnosis.onsetDate) {
+    error.date = 'patient.diagnoses.error.dateRequired'
+  }
+
+  if (!diagnosis.status) {
+    error.status = 'patient.diagnoses.error.statusRequired'
+  }
   return error
 }
 
@@ -404,7 +427,7 @@ function validateMedicalRecord(medicalRecord: MedicalRecord) {
   }
 
   if (!medicalRecord.medicalRecordDate) {
-    error.date = 'patient.medicalrecords.error.dateRequired' 
+    error.date = 'patient.medicalrecords.error.dateRequired'
   }
 
   return error
@@ -436,17 +459,17 @@ function validateCloseAnamnesis(closeAnamnesis: CloseAnamnesis) {
   if (!closeAnamnesis.title) {
     error.title = 'patient.closeAnamneses.error.titleRequired'
   }
-  
+
   if (!closeAnamnesis.name) {
     error.name = 'patient.closeAnamneses.error.nameRequired'
   }
 
   if (!closeAnamnesis.closeAnamnesisDate) {
-    error.date = 'patient.closeAnamneses.error.dateRequired' 
+    error.date = 'patient.closeAnamneses.error.dateRequired'
   }
 
   if (!closeAnamnesis.size) {
-    error.size = 'patient.closeAnamneses.error.sizeRequired' 
+    error.size = 'patient.closeAnamneses.error.sizeRequired'
   }
 
   return error
@@ -551,68 +574,58 @@ export const addNote = (
   }
 }
 
-function validateCarePlan(carePlan: CarePlan): AddCarePlanError {
-  const error: AddCarePlanError = {}
+function validateVisit(visit: Visit): AddVisitError {
+  const error: AddVisitError = {}
 
-  if (!carePlan.title) {
-    error.title = 'patient.carePlan.error.titleRequired'
+  if (!visit.startDateTime) {
+    error.startDateTime = 'patient.visits.error.startDateRequired'
   }
 
-  if (!carePlan.description) {
-    error.description = 'patient.carePlan.error.descriptionRequired'
+  if (!visit.endDateTime) {
+    error.endDateTime = 'patient.visits.error.endDateRequired'
   }
 
-  if (!carePlan.status) {
-    error.status = 'patient.carePlan.error.statusRequired'
+  if (!visit.type) {
+    error.status = 'patient.visits.error.typeRequired'
   }
 
-  if (!carePlan.intent) {
-    error.intent = 'patient.carePlan.error.intentRequired'
-  }
-
-  if (!carePlan.startDate) {
-    error.startDate = 'patient.carePlan.error.startDateRequired'
-  }
-
-  if (!carePlan.endDate) {
-    error.endDate = 'patient.carePlan.error.endDateRequired'
-  }
-
-  if (carePlan.startDate && carePlan.endDate) {
-    if (isBefore(new Date(carePlan.endDate), new Date(carePlan.startDate))) {
-      error.endDate = 'patient.carePlan.error.endDateMustBeAfterStartDate'
+  if (visit.startDateTime && visit.endDateTime) {
+    if (isBefore(new Date(visit.endDateTime), new Date(visit.startDateTime))) {
+      error.endDateTime = 'patient.visits.error.endDateMustBeAfterStartDate'
     }
   }
 
-  if (!carePlan.diagnosisId) {
-    error.condition = 'patient.carePlan.error.conditionRequired'
+  if (!visit.status) {
+    error.status = 'patient.visits.error.statusRequired'
+  }
+  if (!visit.reason) {
+    error.status = 'patient.visits.error.reasonRequired'
+  }
+  if (!visit.location) {
+    error.status = 'patient.visits.error.locationRequired'
   }
 
   return error
 }
 
-export const addCarePlan = (
+export const addVisit = (
   patientId: string,
-  carePlan: CarePlan,
+  visit: Visit,
   onSuccess?: (patient: Patient) => void,
 ): AppThunk => async (dispatch) => {
-  const carePlanError = validateCarePlan(carePlan)
-  if (isEmpty(carePlanError)) {
+  const visitError = validateVisit(visit)
+  if (isEmpty(visitError)) {
     const patient = await PatientRepository.find(patientId)
-    const carePlans = patient.carePlans || ([] as CarePlan[])
-    carePlans.push({
+    const visits = patient.visits || ([] as Visit[])
+    visits.push({
       id: uuid(),
-      createdOn: new Date(Date.now().valueOf()).toISOString(),
-      ...carePlan,
+      createdAt: new Date(Date.now().valueOf()).toISOString(),
+      ...visit,
     })
-    patient.carePlans = carePlans
+    patient.visits = visits
 
     await dispatch(updatePatient(patient, onSuccess))
-  } else {
-    carePlanError.message = 'patient.carePlan.error.unableToAdd'
-    dispatch(addCarePlanError(carePlanError))
   }
 }
-
 export default patientSlice.reducer
 export type { AddCloseAnamnesisError }

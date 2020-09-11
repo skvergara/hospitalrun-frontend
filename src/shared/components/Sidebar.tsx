@@ -39,14 +39,16 @@ const Sidebar = () => {
     splittedPath[1].includes('patients')
       ? 'patient'
       : splittedPath[1].includes('appointments')
-      ? 'appointment'
-      : splittedPath[1].includes('labs')
-      ? 'labs'
-      : splittedPath[1].includes('incidents')
-      ? 'incidents'
-      : splittedPath[1].includes('imagings')
-      ? 'imagings'
-      : 'none',
+        ? 'appointment'
+        : splittedPath[1].includes('labs')
+          ? 'labs'
+          : splittedPath[1].includes('medications')
+            ? 'medications'
+            : splittedPath[1].includes('incidents')
+              ? 'incidents'
+              : splittedPath[1].includes('imagings')
+                ? 'imagings'
+                : 'none',
   )
 
   const setExpansion = (item: string) => {
@@ -242,6 +244,56 @@ const Sidebar = () => {
             >
               <Icon icon="incident" style={iconMargin} />
               {!sidebarCollapsed && t('labs.requests.label')}
+            </ListItem>
+          )}
+        </List>
+      )}
+    </>
+  )
+
+  const getMedicationLinks = () => (
+    <>
+      <ListItem
+        active={splittedPath[1].includes('medications')}
+        onClick={() => {
+          navigateTo('/medications')
+          setExpansion('medications')
+        }}
+        className="nav-item"
+        style={listItemStyle}
+      >
+        <Icon
+          icon={
+            splittedPath[1].includes('medications') && expandedItem === 'medications'
+              ? 'down-arrow'
+              : 'right-arrow'
+          }
+          style={expandibleArrow}
+        />
+        <Icon icon="medication" /> {!sidebarCollapsed && t('medications.label')}
+      </ListItem>
+      {splittedPath[1].includes('medications') && expandedItem === 'medications' && (
+        <List layout="flush" className="nav flex-column">
+          {permissions.includes(Permissions.RequestMedication) && (
+            <ListItem
+              className="nav-item"
+              style={listSubItemStyleNew}
+              onClick={() => navigateTo('/medications/new')}
+              active={splittedPath[1].includes('medications') && splittedPath.length > 2}
+            >
+              <Icon icon="add" style={iconMargin} />
+              {!sidebarCollapsed && t('medications.requests.new')}
+            </ListItem>
+          )}
+          {permissions.includes(Permissions.ViewMedications) && (
+            <ListItem
+              className="nav-item"
+              style={listSubItemStyle}
+              onClick={() => navigateTo('/medications')}
+              active={splittedPath[1].includes('medications') && splittedPath.length < 3}
+            >
+              <Icon icon="incident" style={iconMargin} />
+              {!sidebarCollapsed && t('medications.requests.label')}
             </ListItem>
           )}
         </List>
